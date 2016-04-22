@@ -1,0 +1,16 @@
+# Provides TCP syslog reception
+$ModLoad imtcp
+
+# make gtls driver the default
+$DefaultNetstreamDriver gtls
+
+# certificate files
+$DefaultNetstreamDriverCAFile /etc/pki/tls/private/ca.pem
+$DefaultNetstreamDriverCertFile /etc/pki/tls/private/server_cert.pem
+$DefaultNetstreamDriverKeyFile /etc/pki/tls/private/server_key.pem
+
+
+# $InputTCPServerStreamDriverAuthMode x509/certvalid
+$InputTCPServerStreamDriverAuthMode anon
+$InputTCPServerStreamDriverMode 1 # run driver in TLS-only mode
+$InputTCPServerRun 10514

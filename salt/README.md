@@ -26,10 +26,7 @@ By jumping in with `docker exec -i -t saltmaster bash` your able to test/trouble
 Using docker [machine](https://github.com/docker/machine) and [composer](https://github.com/docker/compose) to get a multi-minion setup. Copy and configure `docker-compose.yml.example` to `docker-compose.yml` and run the following
 
 ```
-brew install docker-machine docker-compose
-docker-machine create --driver virtualbox salt
-eval "$(docker-machine env salt)"
-docker-compose up
+docker-compose up -d
 ```
 
 By jumping in with `docker exec -it saltmaster bash` your able to test/troubleshoot. Now your ready to write you states and test them out.

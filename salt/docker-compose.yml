@@ -2,6 +2,7 @@
 
 master:
   image: thikade/salt:latest
+  container_name: master
   environment:
     SALT_USE: master
     SALT_NAME: master
@@ -20,6 +21,7 @@ master:
     - ./srv/salt:/srv/salt/:rw
 minion1:
   image: thikade/salt:latest
+  container_name: minion1  
   links:
    - master
   environment:
@@ -28,6 +30,7 @@ minion1:
     SALT_GRAINS: "{'test': 'test'}"
   hostname: minion1
 minion2:
+  container_name: minion2
   image: thikade/salt:latest
   links:
    - master

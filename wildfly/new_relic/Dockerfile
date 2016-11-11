@@ -1,4 +1,5 @@
 FROM jboss/wildfly:8.2.1.Final
+# FROM jboss/wildfly:10.0.0.Final
 
 ENV WF_MGMT_BIND_ADDRESS 0.0.0.0
 
@@ -38,23 +39,40 @@ RUN cd /opt/jboss/wildfly/newrelic/ && sed -e "s/@LICENSE_KEY@/$LICENSE_KEY/" ne
 RUN chown -R jboss:jboss /opt/jboss/wildfly/newrelic
 
 USER jboss 
+
+# DEPLOY NewRelic monitoring agent
 RUN cd /opt/jboss/wildfly/newrelic && java -jar newrelic.jar install
+# RUN grep "2innovate" /opt/jboss/wildfly/newrelic/newrelic.yml
 
-RUN grep "2innovate" /opt/jboss/wildfly/newrelic/newrelic.yml
 
+# DEPLOY JDBC driver jar
+RUN mkdir -p /opt/jboss/wildfly/modules/org/apache/derby/main
+COPY resources/drivers/derby*.jar resources/drivers/module.xml /opt/jboss/wildfly/modules/org/apache/derby/main/
 
-# not needed at the moment!
-# COPY logger-config.cli /home/jboss/commands.cli
-# COPY execute-cli.sh    /home/jboss/execute-cli.sh
-# RUN /bin/bash /home/jboss/execute-cli.sh
+##### deploy JSF MyFaces 2.1.7
+COPY resources/jsf/install-myfaces-2.2.10.zip /home/jboss/install-myfaces-2.2.10.cli
+#COPY resources/jsf/install-myfaces-2.1.7.zip /home/jboss/install-myfaces-2.1.7.cli
 
-# will just log a timestamp to stdout
-# access deployed servlet: http://1.2.3.4:8080//LoggingServlet/log
-COPY LoggingServlet.war  /opt/jboss/wildfly/standalone/deployments/
-
-#RUN ls -l /opt/jboss/wildfly/standalone/deployments/
+# CONFIGURE JBoss
+COPY execute-cli.sh    					/home/jboss/execute-cli.sh
+COPY resources/config/datasources.cli 	/home/jboss/commands.cli
+RUN /bin/bash /home/jboss/execute-cli.sh 
 # needed to fix startup error: https://github.com/tsaarni/docker-ejbca/issues/1
 RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history/current
+
+# deploy JSF Myfaces
+COPY resources/config/jsf.cli /home/jboss/commands.cli
+
+RUN /bin/bash /home/jboss/execute-cli.sh 
+# needed to fix startup error: https://github.com/tsaarni/docker-ejbca/issues/1
+RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history/current
+
+
+# DEPLOY APPS
+COPY resources/applications/*.war    /opt/jboss/wildfly/standalone/deployments/
+
+
+#RUN ls -l /opt/jboss/wildfly/standalone/deployments/
 
 # Set the default command to run on boot
 # This will boot WildFly in the standalone mode and bind to all interface

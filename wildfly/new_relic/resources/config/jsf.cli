@@ -1,0 +1,16 @@
+# Demo CLI script - execute via "bin/jboss-cli.sh --file=commands.cli"
+connect
+# batch
+
+# deploy myfaces
+#   -- somehow this does not work in cli batch mode
+deploy /home/jboss/install-myfaces-2.2.10.cli
+#deploy /home/jboss/install-myfaces-2.1.7.cli
+
+ 
+# execute batch	 
+#list-batch
+#run-batch
+
+# optionally, do reload server now
+# reload

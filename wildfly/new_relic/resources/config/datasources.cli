@@ -1,0 +1,21 @@
+# Demo CLI script - execute via "bin/jboss-cli.sh --file=commands.cli"
+connect
+batch
+
+# try to remove it if it exists
+# data-source remove --name=ExampleDS
+# /subsystem=datasources/jdbc-driver=h2:remove
+
+# add Derby driver
+/subsystem=datasources/jdbc-driver=derby:add(driver-name=derby,driver-module-name=org.apache.derby,driver-datasource-class-name=org.apache.derby.jdbc.EmbeddedDataSource,driver-xa-datasource-class-name=org.apache.derby.jdbc.EmbeddedXADataSource)
+
+
+# add Petstore DS
+data-source  add --name=PetStoreDS --jndi-name=java:/global/jdbc/applicationPetstoreDS --driver-name=derby --connection-url="jdbc:derby:applicationPetstoreDB;create=true" --user-name=app --password=app
+
+# execute	 
+list-batch
+run-batch
+
+# optionally, do reload server now
+# reload

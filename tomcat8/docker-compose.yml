@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  tomcat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # args:
+      #  URL: http://192.168.99.100:8080/
+    image: opensuse
+    container_name: tomcat
+    hostname: tomcat
+    environment:
+      TEST : 'true'
+    expose:
+      - "8080"
+      - "9080"
+    ports:
+      - "9080:9080"
+      - "8080:8080"
+    volumes:
+      - ./volumes/default:/shared:rw
+

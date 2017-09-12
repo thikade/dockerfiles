@@ -1,0 +1,19 @@
+FROM opensuse:latest
+MAINTAINER thomas.hikade@gmail.com
+
+RUN zypper refresh -s
+RUN zypper install -y scout tomcat tomcat-admin-webapps tomcat-lib tomcat-webapps  vim vim-data curl  net-tools iproute2 telnet vim-plugin-gitdiff bind-utils net-tools
+RUN zypper install -y git python python-virtualenv  python-pip tar gzip man which ncurses-utils 
+RUN zypper clean
+
+ADD volumes/default/git/id*pub /root/.ssh/authorized_keys
+ADD volumes/default/.bashrc /root/.bashrc
+ADD sshd_config /etc/ssh/sshd_config
+RUN chmod 644 /root/.ssh/authorized_keys /etc/ssh/sshd_config && ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa && ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t  ed25519
+
+ADD start_sshd.sh /
+RUN chmod 755 /start_sshd.sh
+
+WORKDIR /root
+
+CMD  "/start_sshd.sh"

@@ -22,3 +22,19 @@ services:
       - ./volumes/default:/shared:rw
       - ../../ansible/src/ansible:/ansible-shared:rw
 
+  demobox:
+    build:
+      context: .
+      dockerfile: Dockerfile.demobox
+      # args:
+      #  URL: http://192.168.99.100:8080/
+    image: demobox:latest
+    container_name: demobox
+    hostname: demobox
+    environment:
+      TEST : 'true'
+    expose:
+      - "8080"
+    ports:
+      - "8081:8080"
+    #volumes:

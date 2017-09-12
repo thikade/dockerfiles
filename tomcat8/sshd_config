@@ -1,0 +1,24 @@
+Protocol 2
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+
+
+LogLevel VERBOSE
+
+PermitRootLogin yes
+PubkeyAuthentication yes
+AuthorizedKeysFile	.ssh/authorized_keys
+PasswordAuthentication no
+
+UsePAM no
+
+AllowAgentForwarding no
+AllowTcpForwarding no
+GatewayPorts no
+X11Forwarding no
+
+# override default of no subsystems
+# Subsystem	sftp	/usr/lib/ssh/sftp-server
+
+Subsystem sftp internal-sftp
+# ForceCommand internal-sftp

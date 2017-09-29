@@ -4,7 +4,7 @@ MAINTAINER thomas.hikade@gmail.com
 RUN zypper refresh -s
 RUN zypper install -y scout tomcat tomcat-admin-webapps tomcat-lib tomcat-webapps  vim vim-data curl  net-tools iproute2 telnet vim-plugin-gitdiff bind-utils net-tools 
 RUN zypper install -y git python python-virtualenv  python-pip tar gzip man which ncurses-utils inotify-tools
-RUN zypper install -y ansible
+RUN zypper install -y ansible make
 RUN zypper clean
 
 ADD volumes/default/git/id* volumes/default/git/known_hosts /root/.ssh/

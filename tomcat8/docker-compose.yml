@@ -20,7 +20,7 @@ services:
       - "8080:8080"
     volumes:
       - ./volumes/default:/shared:rw
-      - ../../ansible/src/ansible:/ansible-shared:rw
+      - /c/Users/ThomasHikade/Documents/GitHub/ansible/src/ansible:/ansible-shared:rw
 
   demobox:
     build:

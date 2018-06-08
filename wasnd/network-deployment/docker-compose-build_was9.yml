@@ -1,14 +1,14 @@
 version: '2'
 
 networks:
-  net_was9:
-    driver: bridge
-    # external: true
+   was9:
+#     # driver: bridge
+     external: true
 
 services:
 
   wasnd_install_step1:
-    image: wasnd_delete_me
+    image: was9_delete_me
     hostname: was
     build:
       context: ./install
@@ -16,8 +16,8 @@ services:
       args:
         user: wasadmin
         group: wasadmin
-        URL: http://192.168.99.100:8080/
-        REPOS: $URL/9000/BASE,$URL/9007,$URL/JDK-80511
+        URL: http://192.168.99.102:8080/WASND
+        REPOS: http://192.168.99.102:8080/WASND/9000/BASE,http://192.168.99.102:8080/WASND/9007,http://192.168.99.102:8080/WASND/JDK-80511
 
 
   wasnd_install_step2:
@@ -45,9 +45,7 @@ services:
         PROFILE_NAME: Dmgr01
         CELL_NAME: DefaultCell9
         NODE_NAME: ManagerNode01
-        HOST_NAME: localhost
-    depends_on:
-      - wasnd_install_step2
+        HOST_NAME: dmgr
     environment:
       DUMMY: test
     hostname: dmgr
@@ -72,9 +70,9 @@ services:
       - "9060:9060"
       - "9043:9043"
     volumes:
-      - /c/Users/ThomasHikade/Documents/GitHub/wasconfig:/wasconfig:rw
+      - $PRJ_ROOT/wasconfig:/wasconfig:rw
     networks:
-      - net_was9
+      - was9
 
   node01:
     image: wasnd9-node01
@@ -88,8 +86,8 @@ services:
         CELL_NAME: Dummy
         NODE_NAME: CustomNode01
         HOST_NAME: node01
-    depends_on:
-      - dmgr
+    # depends_on:
+    #   - dmgr
     environment:
       NODE_NAME: CustomNode01
       DMGR_HOST: dmgr
@@ -116,10 +114,10 @@ services:
       - 9080
       - 9443
     networks:
-      - net_was9
+     - was9
 
   node02:
-    image: wasnd-cell-node02
+    image: wasnd9-node02
     container_name: node9-02
     hostname: node02
     build:
@@ -130,8 +128,8 @@ services:
         CELL_NAME: Dummy
         NODE_NAME: CustomNode02
         HOST_NAME: node02
-    depends_on:
-      - dmgr
+    # depends_on:
+    #   - dmgr
     environment:
       NODE_NAME: CustomNode02
       DMGR_HOST: dmgr
@@ -158,4 +156,4 @@ services:
       - 9080
       - 9443
     networks:
-      - net_was9
+      - was9

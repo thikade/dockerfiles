@@ -38,7 +38,8 @@ ARG JDK_VERSION=com.ibm.java.jdk.v8
 ###################### IBM Installation Manager ##########################
 
 # Install IBM Installation Manager
-RUN wget -q $URL/agent.installer.lnx.gtk.x86_64_1.8.5.zip -O /tmp/IM.zip \
+RUN echo "URL is: $URL" && echo "REPOS is: $REPOS" && \
+    wget -q $URL/agent.installer.lnx.gtk.x86_64_1.8.5.zip -O /tmp/IM.zip \
     && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
     && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
       -installationDirectory "/opt/IBM/InstallationManager"  \

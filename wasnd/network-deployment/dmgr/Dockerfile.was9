@@ -37,8 +37,8 @@ EXPOSE 9060 9043 9809 8879 9632 9401 9403 9402 9100 7277 9352 5555 7060 11005 11
 
 ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
 
-RUN /opt/IBM/WebSphere/AppServer/bin/startManager.sh
-
 COPY startDmgr.sh update*.py /work/
 
-CMD ["/work/startDmgr.sh"]
+RUN /opt/IBM/WebSphere/AppServer/bin/startManager.sh
+
+CMD ["bash", "/work/startDmgr.sh"]

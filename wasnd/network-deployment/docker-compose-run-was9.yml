@@ -1,13 +1,16 @@
 version: '2'
 
 networks:
-  cellNetwork:
-    driver: bridge
+   was9:
+     # driver: bridge
+     external: true
 
 services:
+
   dmgr:
-    image: wasnd-cell-dmgr
-    container_name: dmgr
+    image: wasnd9-cell-dmgr
+    container_name: dmgr9
+    hostname: dmgr
     environment:
       WASCONFIG_RUNAS_USER : wasadmin
       WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
@@ -17,7 +20,6 @@ services:
       WASCONFIG_ADMIN_PORT : 8879
       WASCONFIG_ADMIN_USER : wasadmin
       WASCONFIG_ADMIN_PASS : o|vjbh`@k4hjqyoe
-    hostname: dmgr
     expose:
       - "9060"
       - "9043"
@@ -42,11 +44,11 @@ services:
       - $PRJ_ROOT/wasconfig:/wasconfig:rw
       - $PRJ_ROOT/was_configs:/config:rw
     networks:
-      - cellNetwork
+      - was9
 
   node01:
-    image: wasnd-cell-node01
-    container_name: node01
+    image: wasnd9-cell-node01
+    container_name: node9-01
     depends_on:
       - dmgr
     environment:
@@ -79,18 +81,18 @@ services:
       - "9080:9080"
       - "9443:9443"
     networks:
-      - cellNetwork
+      - was9
 
   node02:
-    image: wasnd-cell-node02
-    container_name: node02
+    image: wasnd9-cell-node02
+    container_name: node9-02
+    hostname: node02
     depends_on:
       - dmgr
     environment:
       NODE_NAME: CustomNode02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
-    hostname: node02
     expose:
       - 2809
       - 9402
@@ -113,4 +115,4 @@ services:
       - 9080
       - 9443
     networks:
-      - cellNetwork
+      - was9

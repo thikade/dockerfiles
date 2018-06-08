@@ -1,0 +1,18 @@
+FROM        ubuntu:latest-packages
+MAINTAINER  thikade "thomas.hikade@gmail.com"
+
+ENV JENKINS_HOME /cloudbees
+ENV JENKINS_HTTP_PORT 8080
+
+EXPOSE $JENKINS_HTTP_PORT
+
+WORKDIR ${JENKINS_HOME}
+
+#RUN wget https://downloads.cloudbees.com/cjoc/rolling/latest/jenkins-oc.war && wget https://downloads.cloudbees.com/cje/rolling/latest/jenkins.war 
+
+COPY start.sh apps/jenkins* ${JENKINS_HOME}/
+COPY start.sh ${JENKINS_HOME}/
+
+RUN chmod  o+rx  ${JENKINS_HOME}  && chmod -R a+r ${JENKINS_HOME}/*
+
+CMD "${JENKINS_HOME}/start.sh"

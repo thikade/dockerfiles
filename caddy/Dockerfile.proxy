@@ -7,12 +7,15 @@ Maintainer thomas.hikade@gmail.com
 
 ADD caddy_bin/caddy /
 
-ADD Caddyfile /
+ADD Caddyfile.proxy /Caddyfile
 
 RUN mkdir /data
 ADD some_index.html /data
 
-ENV HTTP_PORT=8080 
+ENV HTTP_PORT=8080 \
+    BA_USER=tester \
+    BA_PASS=abc123!
+
 
 EXPOSE $HTTP_PORT
 

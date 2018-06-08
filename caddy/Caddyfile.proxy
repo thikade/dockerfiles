@@ -10,3 +10,9 @@ errors stdout
 # gzip
 tls off
 
+forwardproxy {
+    hide_ip
+    hide_via
+    #probe_resistance
+    # basicauth {$BA_USER} {$BA_PASS}
+}

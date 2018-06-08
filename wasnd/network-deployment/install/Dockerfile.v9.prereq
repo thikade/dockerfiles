@@ -1,0 +1,58 @@
+###########################################################################
+# (C) Copyright IBM Corporation 2015, 2016.                               #
+#                                                                         #
+# Licensed under the Apache License, Version 2.0 (the "License");         #
+# you may not use this file except in compliance with the License.        #
+# You may obtain a copy of the License at                                 #
+#                                                                         #
+#      http://www.apache.org/licenses/LICENSE-2.0                         #
+#                                                                         #
+# Unless required by applicable law or agreed to in writing, software     #
+# distributed under the License is distributed on an "AS IS" BASIS,       #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.#
+# See the License for the specific language governing permissions and     #
+# limitations under the License.                                          #
+###########################################################################
+
+FROM ubuntu:16.04
+
+# based on work from  Kavitha Suresh Kumar <kavisuresh@in.ibm.com>
+MAINTAINER thomas.hikade@gmail.com
+
+RUN apt-get update && apt-get install -y unzip wget
+
+ARG user=wasadmin
+ARG group=wasadmin
+
+RUN groupadd $group && useradd $user -g $group -m\
+    && chown -R $user:$group /var /opt /tmp
+
+USER $user
+
+ARG URL=http://192.168.99.100:8080/WASND
+ARG REPOS=$URL/9000/BASE,$URL/JDK-80511
+
+ARG WAS_VERSION=com.ibm.websphere.ND.v90
+ARG JDK_VERSION=com.ibm.java.jdk.v8
+
+###################### IBM Installation Manager ##########################
+
+# Install IBM Installation Manager
+RUN wget -q $URL/agent.installer.lnx.gtk.x86_64_1.8.5.zip -O /tmp/IM.zip \
+    && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
+    && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
+      -installationDirectory "/opt/IBM/InstallationManager"  \
+      -dataLocation "/var/ibm/InstallationManager" -showProgress \
+    && rm -fr /tmp/IM.zip /tmp/im
+
+### IBM WebSphere Application Server & IBM Java SDK ######################
+
+# Install IBM WebSphere Application Server v9 & IBM Java SDK 8
+RUN /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
+      && /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+      -acceptLicense install $WAS_VERSION $JDK_VERSION \
+      -repositories $REPOS \
+      -installationDirectory /opt/IBM/WebSphere/AppServer \
+      -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
+
+CMD ["tar","cvf","/tmp/was.tar","/opt/IBM/WebSphere/AppServer"]

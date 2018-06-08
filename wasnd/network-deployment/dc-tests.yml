@@ -1,0 +1,116 @@
+version: '2'
+
+networks:
+  net01:
+    # driver: bridge
+    external: true
+
+services:
+  dmgr:
+    image: wasnd-dmgr
+    hostname: dmgr
+    build: 
+      context: ./dmgr
+      dockerfile: Dockerfile    
+      args:
+        PROFILE_NAME: Dmgr01
+        CELL_NAME: DefaultCell01
+        NODE_NAME: ManagerNode01
+        HOST_NAME: localhost
+    networks:
+      - net01
+    environment:
+      DUMMY: test
+    hostname: dmgr
+    expose:
+      - "9060"
+      - "9043"
+      - "9809"
+      - "8879"
+      - "9632" 
+      - "9401" 
+      - "9403" 
+      - "9402" 
+      - "9100" 
+      - "7277" 
+      - "9352" 
+      - "5555" 
+      - "7060" 
+      - "11005" 
+      - "11006" 
+      - "9420"
+    ports:
+      - "9060:9060"
+      - "9043:9043"
+    volumes:
+      - /c/Users/ThomasHikade/Documents/GitHub/wasconfig:/wasconfig:rw
+    networks:
+      - net01
+
+  # node01:
+  #   image: wasnd-cell-node01
+  #   # container_name: new-node01
+  #   depends_on: 
+  #     - dmgr
+  #   environment:
+  #     NODE_NAME: CustomNode01
+  #     DMGR_HOST: dmgr
+  #     DMGR_PORT: "8879"
+  #   hostname: node01
+  #   expose:
+  #     - 2809 
+  #     - 9402
+  #     - 9403
+  #     - 9353
+  #     - 9633
+  #     - 9100
+  #     - 11004
+  #     - 11003
+  #     - 9401
+  #     - 7276
+  #     - 7286
+  #     - 5558
+  #     - 5578
+  #     - 5060
+  #     - 5061
+  #     - 8880
+  #     - 9060
+  #     - 9043 
+  #     - 9080 
+  #     - 9443
+  #   networks:
+  #     - cellNetwork
+
+  # node02:
+  #   image: wasnd-cell-node02
+  #   # container_name: new-node02
+  #   depends_on: 
+  #     - dmgr    
+  #   environment:
+  #     NODE_NAME: CustomNode02
+  #     DMGR_HOST: dmgr
+  #     DMGR_PORT: "8879"
+  #   hostname: node02
+  #   expose:
+  #     - 2809 
+  #     - 9402
+  #     - 9403
+  #     - 9353
+  #     - 9633
+  #     - 9100
+  #     - 11004
+  #     - 11003
+  #     - 9401
+  #     - 7276
+  #     - 7286
+  #     - 5558
+  #     - 5578
+  #     - 5060
+  #     - 5061
+  #     - 8880
+  #     - 9060
+  #     - 9043 
+  #     - 9080 
+  #     - 9443
+  #   networks:
+  #     - cellNetwork

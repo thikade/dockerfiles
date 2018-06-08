@@ -1,0 +1,116 @@
+version: '2'
+
+networks:
+  cellNetwork:
+    driver: bridge
+
+services:
+  dmgr:
+    image: wasnd-cell-dmgr
+    container_name: dmgr
+    environment:
+      WASCONFIG_RUNAS_USER : wasadmin
+      WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
+      WASCONFIG_PROFILE_PATH : /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
+      WASCONFIG_PROFILE_NAME : Dmgr01
+      WASCONFIG_ADMIN_HOST : localhost
+      WASCONFIG_ADMIN_PORT : 8879
+      WASCONFIG_ADMIN_USER : wasadmin
+      WASCONFIG_ADMIN_PASS : o|vjbh`@k4hjqyoe
+    hostname: dmgr
+    expose:
+      - "9060"
+      - "9043"
+      - "9809"
+      - "8879"
+      - "9632" 
+      - "9401" 
+      - "9403" 
+      - "9402" 
+      - "9100" 
+      - "7277" 
+      - "9352" 
+      - "5555" 
+      - "7060" 
+      - "11005" 
+      - "11006" 
+      - "9420"
+    ports:
+      - "9060:9060"
+      - "9043:9043"
+    volumes:
+      - /c/Users/ThomasHikade/Documents/GitHub/wasconfig:/wasconfig:rw
+      - /c/Users/ThomasHikade/Documents/GitHub/was_configs:/config:rw
+    networks:
+      - cellNetwork
+
+  node01:
+    image: wasnd-cell-node01
+    container_name: node01
+    depends_on: 
+      - dmgr
+    environment:
+      NODE_NAME: CustomNode01
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    hostname: node01
+    expose:
+      - 2809 
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043 
+      - 9080 
+      - 9443
+    ports:
+      - "9080:9080"
+      - "9443:9443"
+    networks:
+      - cellNetwork
+
+  node02:
+    image: wasnd-cell-node02
+    container_name: node02
+    depends_on: 
+      - dmgr    
+    environment:
+      NODE_NAME: CustomNode02
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    hostname: node02
+    expose:
+      - 2809 
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043 
+      - 9080 
+      - 9443
+    networks:
+      - cellNetwork

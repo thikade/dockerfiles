@@ -1,0 +1,161 @@
+version: '2'
+
+networks:
+  net_was9:
+    driver: bridge
+    # external: true
+
+services:
+
+  wasnd_install_step1:
+    image: wasnd_delete_me
+    hostname: was
+    build:
+      context: ./install
+      dockerfile: Dockerfile.v9.prereq
+      args:
+        user: wasadmin
+        group: wasadmin
+        URL: http://192.168.99.100:8080/
+        REPOS: $URL/9000/BASE,$URL/9007,$URL/JDK-80511
+
+
+  wasnd_install_step2:
+    image: was9-noprofile
+    hostname: dmgr
+    build:
+      context: ./install
+      dockerfile: Dockerfile.v9.install
+      args:
+        WASVERSION: 9.0.0.7
+        user: wasadmin
+        group: wasadmin
+    # depends_on:
+    #   - wasnd_install_step1
+
+
+  dmgr:
+    image: wasnd9-dmgr
+    container_name: dmgr9
+    hostname: dmgr
+    build:
+      context: ./dmgr
+      dockerfile: Dockerfile.was9
+      args:
+        PROFILE_NAME: Dmgr01
+        CELL_NAME: DefaultCell9
+        NODE_NAME: ManagerNode01
+        HOST_NAME: localhost
+    depends_on:
+      - wasnd_install_step2
+    environment:
+      DUMMY: test
+    hostname: dmgr
+    expose:
+      - "9060"
+      - "9043"
+      - "9809"
+      - "8879"
+      - "9632"
+      - "9401"
+      - "9403"
+      - "9402"
+      - "9100"
+      - "7277"
+      - "9352"
+      - "5555"
+      - "7060"
+      - "11005"
+      - "11006"
+      - "9420"
+    ports:
+      - "9060:9060"
+      - "9043:9043"
+    volumes:
+      - /c/Users/ThomasHikade/Documents/GitHub/wasconfig:/wasconfig:rw
+    networks:
+      - net_was9
+
+  node01:
+    image: wasnd9-node01
+    container_name: node9-01
+    hostname: node01
+    build:
+      context: ./custom
+      dockerfile: Dockerfile.was9
+      args:
+        PROFILE_NAME: Custom
+        CELL_NAME: Dummy
+        NODE_NAME: CustomNode01
+        HOST_NAME: node01
+    depends_on:
+      - dmgr
+    environment:
+      NODE_NAME: CustomNode01
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    expose:
+      - 2809
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043
+      - 9080
+      - 9443
+    networks:
+      - net_was9
+
+  node02:
+    image: wasnd-cell-node02
+    container_name: node9-02
+    hostname: node02
+    build:
+      context: ./custom
+      dockerfile: Dockerfile.was9
+      args:
+        PROFILE_NAME: Custom
+        CELL_NAME: Dummy
+        NODE_NAME: CustomNode02
+        HOST_NAME: node02
+    depends_on:
+      - dmgr
+    environment:
+      NODE_NAME: CustomNode02
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    expose:
+      - 2809
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043
+      - 9080
+      - 9443
+    networks:
+      - net_was9

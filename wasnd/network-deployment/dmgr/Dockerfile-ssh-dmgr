@@ -1,0 +1,46 @@
+###########################################################################
+# (C) Copyright IBM Corporation 2015.                                     #
+#                                                                         #
+# Licensed under the Apache License, Version 2.0 (the "License");         #
+# you may not use this file except in compliance with the License.        #
+# You may obtain a copy of the License at                                 #
+#                                                                         #
+#      http://www.apache.org/licenses/LICENSE-2.0                         #
+#                                                                         #
+# Unless required by applicable law or agreed to in writing, software     #
+# distributed under the License is distributed on an "AS IS" BASIS,       #
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.#
+# See the License for the specific language governing permissions and     #
+# limitations under the License.                                          #
+###########################################################################
+
+FROM wasnd-cell-dmgr
+MAINTAINER thikade <thomas.hikade@gmail.com>
+EXPOSE 22
+
+USER root
+
+# install apps
+RUN DEBIAN_FRONTEND=noninteractive apt-get update -y
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    openssh-server openssh-client \
+    supervisor \
+    && \
+    apt-get -yqq clean && \
+    apt-get -yqq purge && \
+    rm -rf /tmp/* /var/tmp/* && \
+    rm -rf /var/lib/apt/lists/*
+
+ARG ROOT_HOME=/root
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY sshkeys/* $ROOT_HOME/.ssh/
+RUN mkdir -p /var/run/sshd /var/log/supervisor $ROOT_HOME/.ssh && \
+    cp $ROOT_HOME/.ssh/id_rsa.pub $ROOT_HOME/.ssh/authorized_keys && \
+    chmod 700 $ROOT_HOME/.ssh && \
+    chmod 600 $ROOT_HOME/.ssh/authorized_keys $ROOT_HOME/.ssh/id*
+
+
+## CMD ["/work/startDmgr.sh"]
+CMD ["/usr/bin/supervisord"]

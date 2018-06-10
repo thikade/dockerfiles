@@ -16,8 +16,8 @@ services:
       args:
         user: wasadmin
         group: wasadmin
-        URL: http://192.168.99.102:8080/WASND
-        REPOS: http://192.168.99.102:8080/WASND/9000/BASE,http://192.168.99.102:8080/WASND/9007,http://192.168.99.102:8080/WASND/JDK-80511
+        URL: http://192.168.99.100:8080/WASND
+        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9007,http://192.168.99.100:8080/WASND/JDK-80511
 
 
   wasnd_install_step2:

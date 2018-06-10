@@ -1,0 +1,10 @@
+# credits: jacksoncage/salt
+
+mlm:
+  image: thikade/salt:latest
+  container_name: masterless  
+  environment:
+    SALT_USE: masterless
+    SALT_NAME: masterless
+    SALT_GRAINS: "{'test': 'test'}"
+  hostname: masterless

@@ -7,6 +7,28 @@ networks:
 
 services:
 
+  ldap:
+    # docker run --env LDAP_ORGANISATION="2i" --env LDAP_DOMAIN="2i.at" --env LDAP_ADMIN_PASSWORD="admin" --detach --name ldap    osixia/openldap:1.1.7
+    # ldapsearch -x  -b dc=2i,dc=at -D cn=admin,dc=2i,dc=at -w admin
+    image: osixia/openldap:1.1.7
+    container_name: openldap
+    hostname: ldap
+    environment:
+      LDAP_ORGANISATION: 2innovate
+      LDAP_DOMAIN: 2i.at
+      LDAP_ADMIN_PASSWORD: admin
+    expose:
+      - "389"
+      - "636"
+    ports:
+      - "10389:389"
+      - "10636:636"
+    volumes:
+      - $PRJ_ROOT/wasconfig:/wasconfig:rw
+      - $PRJ_ROOT/was_configs:/config:rw
+    networks:
+      - was9
+
   dmgr:
     image: wasnd9-cell-dmgr
     container_name: dmgr9

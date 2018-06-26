@@ -1,0 +1,147 @@
+# README:
+# run openldap container using the following env settings. This will automatically import
+# the ldif files located in ${PWD}/ldif/
+#
+#     docker run --env LDAP_ORGANISATION="2i" --env LDAP_DOMAIN="2i.at" --env LDAP_ADMIN_PASSWORD="admin" --detach --name ldap  \
+#         -v ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom \
+#         osixia/openldap:1.2.1 --copy-service
+#
+# admin DN:  cn=admin,dc=2i,dc=at
+# admin Pass: $LDAP_ADMIN_PASSWORD
+#
+# ldapsearch to verify user/groups:
+#    ldapsearch -x  -b dc=2i,dc=at -D cn=admin,dc=2i,dc=at -w $LDAP_ADMIN_PASSWORD
+
+#
+# A suffix is automatically created during bootstrap of openldap!
+# dn: dc=2i,dc=at
+# objectClass: dcObject
+# dc: 2i
+
+
+####################################
+# OrganizationalUnit "A"
+####################################
+
+dn: ou=orgA,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: orgA
+
+dn: ou=users,ou=orgA,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users
+
+dn: cn=a01,ou=users,ou=orgA,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: a01
+uid: a01
+sn: User a01
+
+dn: cn=a02,ou=users,ou=orgA,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: a02
+uid: a02
+sn: User a02
+
+dn: ou=groups,ou=orgA,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users
+
+dn: cn=a01,ou=groups,ou=orgA,dc=2i,dc=at
+objectClass: groupOfNames
+cn: a01
+member: cn=a01,ou=users,ou=orgA,dc=2i,dc=at
+
+dn: cn=a02,ou=groups,ou=orgA,dc=2i,dc=at
+objectClass: groupOfNames
+cn: a02
+member: cn=a02,ou=users,ou=orgA,dc=2i,dc=at
+
+
+####################################
+# OrganizationalUnit "B"
+####################################
+
+dn: ou=orgB,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: orgB
+
+dn: ou=users,ou=orgB,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users
+
+dn: cn=b01,ou=users,ou=orgB,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: b01
+uid: b01
+sn: User b01
+
+dn: cn=b02,ou=users,ou=orgB,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: b02
+uid: b02
+sn: User b02
+
+dn: ou=groups,ou=orgB,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users
+
+
+
+####################################
+# OrganizationalUnit "C"
+####################################
+
+dn: ou=orgC,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: orgC
+
+dn: ou=users,ou=orgC,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users
+
+dn: cn=c01,ou=users,ou=orgC,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: c01
+uid: c01
+sn: User c01
+
+dn: cn=c02,ou=users,ou=orgC,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: c02
+uid: c02
+sn: User c02
+
+dn: ou=groups,ou=orgC,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users
+
+
+
+####################################
+# OrganizationalUnit "D"
+####################################
+
+dn: ou=orgD,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: orgD
+
+dn: ou=users,ou=orgD,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users
+
+dn: cn=d01,ou=users,ou=orgD,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: d01
+uid: d01
+sn: User d01
+
+dn: cn=d02,ou=users,ou=orgD,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: d02
+uid: d02
+sn: User d02
+
+dn: ou=groups,ou=orgD,dc=2i,dc=at
+objectClass: organizationalUnit
+ou: users

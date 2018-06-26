@@ -27,6 +27,8 @@ dn: ou=orgA,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: orgA
 
+#### USERS
+
 dn: ou=users,ou=orgA,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: users
@@ -36,12 +38,16 @@ objectClass: inetOrgPerson
 cn: a01
 uid: a01
 sn: User a01
+userPassword: a01
 
 dn: cn=a02,ou=users,ou=orgA,dc=2i,dc=at
 objectClass: inetOrgPerson
 cn: a02
 uid: a02
 sn: User a02
+userPassword: a02
+
+#### GROUPS
 
 dn: ou=groups,ou=orgA,dc=2i,dc=at
 objectClass: organizationalUnit
@@ -66,6 +72,8 @@ dn: ou=orgB,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: orgB
 
+#### USERS
+
 dn: ou=users,ou=orgB,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: users
@@ -75,17 +83,30 @@ objectClass: inetOrgPerson
 cn: b01
 uid: b01
 sn: User b01
+userPassword: b01
 
 dn: cn=b02,ou=users,ou=orgB,dc=2i,dc=at
 objectClass: inetOrgPerson
 cn: b02
 uid: b02
 sn: User b02
+userPassword: b02
+
+#### GROUPS
 
 dn: ou=groups,ou=orgB,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: users
 
+dn: cn=b01,ou=groups,ou=orgB,dc=2i,dc=at
+objectClass: groupOfNames
+cn: b01
+member: cn=b01,ou=users,ou=orgB,dc=2i,dc=at
+
+dn: cn=b02,ou=groups,ou=orgB,dc=2i,dc=at
+objectClass: groupOfNames
+cn: b02
+member: cn=b02,ou=users,ou=orgB,dc=2i,dc=at
 
 
 ####################################
@@ -96,6 +117,8 @@ dn: ou=orgC,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: orgC
 
+#### USERS
+
 dn: ou=users,ou=orgC,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: users
@@ -105,17 +128,30 @@ objectClass: inetOrgPerson
 cn: c01
 uid: c01
 sn: User c01
+userPassword: c01
 
 dn: cn=c02,ou=users,ou=orgC,dc=2i,dc=at
 objectClass: inetOrgPerson
 cn: c02
 uid: c02
 sn: User c02
+userPassword: c02
+
+#### GROUPS
 
 dn: ou=groups,ou=orgC,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: users
 
+dn: cn=c01,ou=groups,ou=orgC,dc=2i,dc=at
+objectClass: groupOfNames
+cn: c01
+member: cn=c01,ou=users,ou=orgC,dc=2i,dc=at
+
+dn: cn=c02,ou=groups,ou=orgC,dc=2i,dc=at
+objectClass: groupOfNames
+cn: c02
+member: cn=c02,ou=users,ou=orgC,dc=2i,dc=at
 
 
 ####################################
@@ -126,6 +162,8 @@ dn: ou=orgD,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: orgD
 
+#### USERS
+
 dn: ou=users,ou=orgD,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: users
@@ -135,13 +173,28 @@ objectClass: inetOrgPerson
 cn: d01
 uid: d01
 sn: User d01
+userPassword: d01
+
 
 dn: cn=d02,ou=users,ou=orgD,dc=2i,dc=at
 objectClass: inetOrgPerson
 cn: d02
 uid: d02
 sn: User d02
+userPassword: d02
+
+#### GROUPS
 
 dn: ou=groups,ou=orgD,dc=2i,dc=at
 objectClass: organizationalUnit
 ou: users
+
+dn: cn=d01,ou=groups,ou=orgD,dc=2i,dc=at
+objectClass: groupOfNames
+cn: d01
+member: cn=d01,ou=users,ou=orgD,dc=2i,dc=at
+
+dn: cn=d02,ou=groups,ou=orgD,dc=2i,dc=at
+objectClass: groupOfNames
+cn: d02
+member: cn=d02,ou=users,ou=orgD,dc=2i,dc=at

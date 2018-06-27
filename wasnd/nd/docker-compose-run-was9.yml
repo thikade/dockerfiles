@@ -37,7 +37,7 @@ services:
 
   dmgr:
     image: wasnd9-cell-dmgr
-    container_name: dmgr9
+    container_name: dmgr
     hostname: dmgr
     environment:
       WASCONFIG_RUNAS_USER : wasadmin
@@ -76,7 +76,7 @@ services:
 
   node01:
     image: wasnd9-cell-node01
-    container_name: node9-01
+    container_name: node01
     depends_on:
       - dmgr
     environment:
@@ -113,7 +113,7 @@ services:
 
   node02:
     image: wasnd9-cell-node02
-    container_name: node9-02
+    container_name: node02
     hostname: node02
     depends_on:
       - dmgr

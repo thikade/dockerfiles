@@ -15,11 +15,11 @@ update_host_node_name()
     #Check whether node name is provided or use default
     if [ "$NODE_NAME" = "" ]
     then
-       NODE_NAME="ManagerNode01"
+       NODE_NAME="ManagerNode"
     else
        # Update the nodename
        /opt/IBM/WebSphere/AppServer/bin/wsadmin.sh -lang jython -conntype NONE -f /work/updateNodeName.py \
-       ManagerNode01 $NODE_NAME
+       ManagerNode $NODE_NAME
 
        echo "WAS_NODE=$NODE_NAME" >> /opt/IBM/WebSphere/AppServer/bin/setupCmdLine.sh
 

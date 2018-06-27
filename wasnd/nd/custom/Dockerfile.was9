@@ -20,11 +20,8 @@ FROM was9-noprofile
 MAINTAINER thikade <thomas.hikade@gmail.com>
 
 ARG PROFILE_NAME=Custom
-
 ARG CELL_NAME=CustomCell
-
 ARG NODE_NAME=CustomNode
-
 ARG HOST_NAME=localhost
 
 # Create default Custom Node profile

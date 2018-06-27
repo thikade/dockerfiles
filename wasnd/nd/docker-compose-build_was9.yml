@@ -36,7 +36,7 @@ services:
 
   dmgr:
     image: wasnd9-dmgr
-    container_name: dmgr9
+    container_name: dmgr
     hostname: dmgr
     build:
       context: ./dmgr
@@ -45,7 +45,7 @@ services:
         PROFILE_NAME: Dmgr01
         CELL_NAME: DefaultCell9
         NODE_NAME: ManagerNode01
-        HOST_NAME: dmgr
+        HOST_NAME: localhost
     environment:
       DUMMY: test
     hostname: dmgr
@@ -76,16 +76,16 @@ services:
 
   node01:
     image: wasnd9-node01
-    container_name: node9-01
+    container_name: node01
     hostname: node01
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
-      args:
-        PROFILE_NAME: Custom
-        CELL_NAME: Dummy
-        NODE_NAME: CustomNode01
-        HOST_NAME: node01
+      # args:
+      #   PROFILE_NAME: Custom
+      #   CELL_NAME: Dummy
+      #   NODE_NAME: CustomNode
+      #   HOST_NAME: localhost
     # depends_on:
     #   - dmgr
     environment:
@@ -118,16 +118,16 @@ services:
 
   node02:
     image: wasnd9-node02
-    container_name: node9-02
+    container_name: node02
     hostname: node02
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
-      args:
-        PROFILE_NAME: Custom
-        CELL_NAME: Dummy
-        NODE_NAME: CustomNode02
-        HOST_NAME: node02
+      # args:
+      #   PROFILE_NAME: Custom
+      #   CELL_NAME: Dummy
+      #   NODE_NAME: CustomNode
+      #   HOST_NAME: localhost
     # depends_on:
     #   - dmgr
     environment:

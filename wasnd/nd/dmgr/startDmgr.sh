@@ -20,7 +20,7 @@ update_host_node_name()
        # Update the nodename
        /opt/IBM/WebSphere/AppServer/bin/wsadmin.sh -lang jython -conntype NONE -f /work/updateNodeName.py \
        ManagerNode01 $NODE_NAME
-       
+
        echo "WAS_NODE=$NODE_NAME" >> /opt/IBM/WebSphere/AppServer/bin/setupCmdLine.sh
 
     fi
@@ -50,7 +50,7 @@ startDmgr()
         echo "----------------------"
         tail -n $LINES /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs/dmgr/startServer.log
         echo "----------------------"
-        exit 1        
+        exit 1
     fi
 }
 
@@ -76,7 +76,7 @@ then
 fi
 
 startDmgr
-
+echo "DMGR SETUP COMPLETE"
 trap "stopDmgr" SIGTERM
 
 sleep 10

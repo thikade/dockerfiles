@@ -3,20 +3,20 @@
 #                                                                                   #
 #  Script to update the Hostname and add the node to deployment manager             #
 #                                                                                   #
-#  Usage : updateHostAndAddNode.sh                                                  # 
+#  Usage : updateHostAndAddNode.sh                                                  #
 #                                                                                   #
 #####################################################################################
 
 setEnv()
 {
      #Check whether profile name is provided or use default
-     if [ "$PROFILE_NAME" = "" ] 
+     if [ "$PROFILE_NAME" = "" ]
      then
           PROFILE_NAME="Custom"
      fi
 
      #Check whether node name is provided or use default
-     if [ "$NODE_NAME" = "" ] 
+     if [ "$NODE_NAME" = "" ]
      then
           NODE_NAME="CustomNode"
      fi
@@ -33,17 +33,37 @@ setEnv()
          DMGR_PORT="8879"
      fi
 
+     #Check whether dmgr port is provided or use default
+     if [ "$ADMIN_USER" = "" ]
+     then
+         ADMIN_USER="wasadmin"
+     fi
+
+     #Check whether dmgr port is provided or use default
+     if [ "$ADMIN_PASS" = "" ]
+     then
+         ADMIN_PASS="wasadmin"
+     fi
+
+     ADMIN_AUTH="-username $ADMIN_USER -password $ADMIN_PASS"
      #Get the container hostname
      host=`hostname`
+     echo "### current hostname = $host"
 }
 
 addNodeAndUpdateHostName()
 {
      # Add the node
-     /opt/IBM/WebSphere/AppServer/bin/addNode.sh $DMGR_HOST $DMGR_PORT
+     echo ""
+     echo "********* running addNode:"
+     /opt/IBM/WebSphere/AppServer/bin/addNode.sh $DMGR_HOST $DMGR_PORT $ADMIN_AUTH
 
      # Update the hostname
-     /opt/IBM/WebSphere/AppServer/bin/wsadmin.sh -lang jython -conntype SOAP -host $DMGR_HOST \
+     echo ""
+     echo "======================================================================="
+     echo "*  update the host name for CustomNode to $host"
+     echo "======================================================================="
+     /opt/IBM/WebSphere/AppServer/bin/wsadmin.sh -lang jython -conntype SOAP $ADMIN_AUTH -host $DMGR_HOST \
      -port $DMGR_PORT -f /work/updateHostName.py CustomNode $host
 
     touch /work/nodefederated
@@ -72,8 +92,8 @@ stopNode()
 {
      # Stop the node
      echo "Stopping nodeagent.................."
-     /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/stopNode.sh
- 
+     /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/stopNode.sh $ADMIN_AUTH
+
      if [ $? = 0 ]
      then
           echo "NodeAgent stopped successfully."
@@ -83,7 +103,10 @@ stopNode()
 renameNode()
 {
      # rename the node
-     /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/renameNode.sh $DMGR_HOST $DMGR_PORT $NODE_NAME
+     echo "*******************************************************************"
+     echo "running rename node from CustomNode to: $NODE_NAME "
+     echo "*******************************************************************"
+     /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/renameNode.sh $DMGR_HOST $DMGR_PORT $NODE_NAME  $ADMIN_AUTH
 }
 
 if [ "$WAIT" != "" ] && [ ! -f "/work/nodefederated" ]
@@ -95,19 +118,25 @@ setEnv
 
 if [ -d /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs/nodeagent ]
 then
+     echo "******* starting node"
      startNode
 else
+     echo "******* running: addNodeAndUpdateHostName"
      addNodeAndUpdateHostName
      # Rename and start the node
      if [ $NODE_NAME != "CustomNode" ]
      then
+          echo ""
           renameNode
+          echo ""
+          echo "******* running: startNode"
           startNode
      fi
+     echo "NODE RECONFIG COMPLETE!"
 fi
 
 trap "stopNode" SIGTERM
-    
+
 sleep 10
 
 while [ -f "/opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs/nodeagent/nodeagent.pid" ]

@@ -44,10 +44,10 @@ services:
       WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
       WASCONFIG_PROFILE_PATH : /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
       WASCONFIG_PROFILE_NAME : Dmgr01
-      WASCONFIG_ADMIN_HOST : localhost
+      WASCONFIG_ADMIN_HOST : dmgr
       WASCONFIG_ADMIN_PORT : 8879
       WASCONFIG_ADMIN_USER : wasadmin
-      WASCONFIG_ADMIN_PASS : o|vjbh`@k4hjqyoe
+      WASCONFIG_ADMIN_PASS : wasadmin
     expose:
       - "9060"
       - "9043"

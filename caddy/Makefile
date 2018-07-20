@@ -1,5 +1,5 @@
-default: build
-	docker run -d  --name caddy -p 8080:8080 -v /INSTALL_E:/data caddy
+default:
+	docker run -d  --name caddy -p 8080:8080 -v /INSTALL:/data caddy
 build:
 	docker build -t caddy -f Dockerfile .
 build-proxy:

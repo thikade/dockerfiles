@@ -123,6 +123,9 @@ fi
 echo -e "\n*** Container node02 is started\n"
 
 
-docker commit dmgr8 wasnd85-cell-dmgr
-docker commit node801 wasnd85-cell-node01
-docker commit node802 wasnd85-cell-node02
+docker commit dmgr wasnd85-cell-dmgr
+docker commit node01 wasnd85-cell-node01
+docker commit node02 wasnd85-cell-node02
+
+docker images| grep "wasnd85-cell"
+echo -e "\n*** WASv85 CELL images commited. All operations finished!\n"

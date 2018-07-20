@@ -35,7 +35,7 @@ services:
 
   dmgr:
     image: wasnd85-dmgr
-    container_name: dmgr8
+    container_name: dmgr
     hostname: dmgr
     build:
       context: ./dmgr
@@ -74,7 +74,7 @@ services:
 
   node01:
     image: wasnd85-node01
-    container_name: node801
+    container_name: node01
     hostname: node01
     build:
       context: ./custom
@@ -111,7 +111,7 @@ services:
 
   node02:
     image: wasnd85-node02
-    container_name: node802
+    container_name: node02
     hostname: node02
     # container_name: new-node02
     build:

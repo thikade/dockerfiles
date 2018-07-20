@@ -63,7 +63,7 @@ services:
 
   dmgr:
     image: wasnd85-cell-dmgr
-    container_name: dmgr8
+    container_name: dmgr
     hostname: dmgr
     environment:
       WASCONFIG_RUNAS_USER : wasadmin
@@ -102,7 +102,7 @@ services:
 
   node01:
     image: wasnd85-cell-node01
-    container_name: node801
+    container_name: node01
     depends_on:
       - dmgr
     environment:
@@ -139,7 +139,7 @@ services:
 
   node02:
     image: wasnd85-cell-node02
-    container_name: node802
+    container_name: node02
     hostname: node02
     depends_on:
       - dmgr

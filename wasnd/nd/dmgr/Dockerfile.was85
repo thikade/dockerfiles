@@ -14,31 +14,33 @@
 # limitations under the License.                                          #
 ###########################################################################
 
-FROM  was8-noprofile
+FROM was85-noprofile
 
 # based on https://github.com/WASdev/ci.docker.websphere-traditional/
 MAINTAINER thikade <thomas.hikade@gmail.com>
 
 ARG PROFILE_NAME=Dmgr01
-
 ARG CELL_NAME=DefaultCell01
 
-ARG NODE_NAME=ManagerNode01
-
-ARG HOST_NAME=localhost
+### DO NOT CHANGE hostname 'localhost' or node name at build time!
+### Hostname will be changed by container ENTRYPOINT/CMD script!
+### using the container's real hostname
+ENV NODE_NAME=ManagerNode
+ENV HOST_NAME=localhost
 
 # Create Deployment Manager profile
 RUN /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
     /opt/IBM/WebSphere/AppServer/profileTemplates/management -profileName $PROFILE_NAME \
     -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME  -serverType DEPLOYMENT_MANAGER \
-    -cellName $CELL_NAME -nodeName $NODE_NAME -disableWASDesktopIntegration -hostName $HOST_NAME
+    -cellName $CELL_NAME -nodeName $NODE_NAME -disableWASDesktopIntegration -hostName $HOST_NAME \
+    -enableAdminSecurity true -adminUserName wasadmin -adminPassword wasadmin
 
 EXPOSE 9060 9043 9809 8879 9632 9401 9403 9402 9100 7277 9352 5555 7060 11005 11006 9420
 
 ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
 
-RUN /opt/IBM/WebSphere/AppServer/bin/startManager.sh
-
 COPY startDmgr.sh update*.py /work/
 
-CMD ["/work/startDmgr.sh"]
+RUN /opt/IBM/WebSphere/AppServer/bin/startManager.sh
+
+CMD ["bash", "/work/startDmgr.sh"]

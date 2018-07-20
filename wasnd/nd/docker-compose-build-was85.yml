@@ -1,0 +1,148 @@
+version: '3'
+
+networks:
+  was8:
+    # driver: bridge
+    external: true
+
+services:
+
+  wasnd_install_step1:
+    image: was85_delete_me
+    hostname: was
+    build:
+      context: ./install
+      dockerfile: Dockerfile.v85.prereq
+      args:
+        user: wasadmin
+        group: wasadmin
+        URL: http://192.168.99.100:8080/WASND
+        REPOS: http://192.168.99.100:8080/WASND/85513/BASE/,http://192.168.99.100:8080/WASND/JDK8/8056/
+    networks:
+      - was8
+
+  wasnd_install_step2:
+    image: was85-noprofile
+    hostname: dmgr
+    build:
+      context: ./install
+      dockerfile: Dockerfile.v85.install
+      args:
+        user: wasadmin
+        group: wasadmin
+    networks:
+      - was8
+
+  dmgr:
+    image: wasnd85-dmgr
+    container_name: dmgr8
+    hostname: dmgr
+    build:
+      context: ./dmgr
+      dockerfile: Dockerfile.was85
+      args:
+        PROFILE_NAME: Dmgr01
+        CELL_NAME: DefaultCell01
+        # NODE_NAME: ManagerNode01
+        # HOST_NAME: localhost
+    environment:
+      DUMMY: test
+    expose:
+      - "9060"
+      - "9043"
+      - "9809"
+      - "8879"
+      - "9632"
+      - "9401"
+      - "9403"
+      - "9402"
+      - "9100"
+      - "7277"
+      - "9352"
+      - "5555"
+      - "7060"
+      - "11005"
+      - "11006"
+      - "9420"
+    ports:
+      - "9060:9060"
+      - "9043:9043"
+    volumes:
+      - $PRJ_ROOT/wasconfig:/wasconfig:rw
+    networks:
+      - was8
+
+  node01:
+    image: wasnd85-node01
+    container_name: node801
+    hostname: node01
+    build:
+      context: ./custom
+      dockerfile: Dockerfile.was85
+      args:
+        PROFILE_NAME: Custom
+    environment:
+      NODE_NAME: CustomNode01
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    expose:
+      - 2809
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043
+      - 9080
+      - 9443
+    networks:
+      - was8
+
+  node02:
+    image: wasnd85-node02
+    container_name: node802
+    hostname: node02
+    # container_name: new-node02
+    build:
+      context: ./custom
+      dockerfile: Dockerfile.was85
+      args:
+        PROFILE_NAME: Custom
+    environment:
+      NODE_NAME: CustomNode02
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    expose:
+      - 2809
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043
+      - 9080
+      - 9443
+    networks:
+      - was8

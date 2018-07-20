@@ -22,7 +22,7 @@ services:
 
   wasnd_install_step2:
     image: was9-noprofile
-    hostname: dmgr
+    hostname: dmgr8
     build:
       context: ./install
       dockerfile: Dockerfile.v9.install
@@ -37,7 +37,7 @@ services:
   dmgr:
     image: wasnd9-dmgr
     container_name: dmgr
-    hostname: dmgr
+    hostname: dmgr8
     build:
       context: ./dmgr
       dockerfile: Dockerfile.was9
@@ -75,7 +75,7 @@ services:
   node01:
     image: wasnd9-node01
     container_name: node01
-    hostname: node01
+    hostname: node801
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
@@ -83,7 +83,7 @@ services:
         PROFILE_NAME: Custom
     environment:
       NODE_NAME: CustomNode01
-      DMGR_HOST: dmgr
+      DMGR_HOST: dmgr8
       DMGR_PORT: "8879"
     expose:
       - 2809
@@ -112,7 +112,7 @@ services:
   node02:
     image: wasnd9-node02
     container_name: node02
-    hostname: node02
+    hostname: node802
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
@@ -120,7 +120,7 @@ services:
         PROFILE_NAME: Custom
     environment:
       NODE_NAME: CustomNode02
-      DMGR_HOST: dmgr
+      DMGR_HOST: dmgr8
       DMGR_PORT: "8879"
     expose:
       - 2809

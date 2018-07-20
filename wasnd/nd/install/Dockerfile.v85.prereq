@@ -1,0 +1,61 @@
+FROM ubuntu:16.04
+
+# based on https://github.com/WASdev/ci.docker.websphere-traditional/
+MAINTAINER thomas.hikade@gmail.com
+
+RUN apt-get update && apt-get install -y unzip wget net-tools sudo
+
+ARG user=wasadmin
+ARG group=wasadmin
+
+RUN groupadd $group && useradd $user -g $group -m\
+    && chown -R $user:$group /var /opt /tmp
+
+USER $user
+
+ARG URL=http://192.168.99.100:8080/WASND
+ARG REPOS=undefined
+
+ARG IM_FILE=agent.installer.lnx.gtk.x86_64_1.8.5.zip
+
+ARG WAS_VERSION=com.ibm.websphere.ND.v85
+ARG JDK_VERSION=com.ibm.websphere.IBMJAVA.v80
+
+
+###################### IBM Installation Manager ##########################
+
+ADD --chown=1000:1000 $URL/$IM_FILE /tmp/IM.zip
+ADD --chown=1000:1000  $URL/WASND_v8.5.5_1of3.zip  /tmp/was1.zip
+ADD --chown=1000:1000  $URL/WASND_v8.5.5_2of3.zip  /tmp/was2.zip
+ADD --chown=1000:1000  $URL/WASND_v8.5.5_3of3.zip  /tmp/was3.zip
+
+# Install IBM Installation Manager
+
+RUN mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
+    && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
+      -installationDirectory "/opt/IBM/InstallationManager"  \
+      -dataLocation "/var/ibm/InstallationManager" -showProgress \
+    && rm -fr /tmp/IM.zip /tmp/im
+
+### IBM WebSphere Application Server & IBM Java SDK ######################
+
+
+# Install IBM WebSphere Application Server v85 & IBM Java SDK 8
+RUN mkdir /tmp/was && unzip  -qd /tmp/was /tmp/was1.zip && echo "unzip 1 ok." \
+    && unzip -qd /tmp/was /tmp/was2.zip && echo "unzip 2 ok." \
+    && unzip -qd /tmp/was /tmp/was3.zip && echo "unzip 3 ok."
+
+RUN  echo "REPO=$REPOS" && /opt/IBM/InstallationManager/eclipse/tools/imcl listAvailablePackages -repositories  /tmp/was/repository.config,$REPOS
+
+RUN echo "Starting WAS installation" \
+    && /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+          -acceptLicense install $WAS_VERSION $JDK_VERSION \
+          -properties user.wasjava=java8 \
+          -repositories /tmp/was/repository.config,$REPOS \
+          -installationDirectory /opt/IBM/WebSphere/AppServer \
+          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
+
+
+CMD ["tar","cvf","/tmp/was.tar","/opt/IBM/WebSphere/AppServer"]
+
+RUN /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long

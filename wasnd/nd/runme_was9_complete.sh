@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WEB_URL=${$1:-http://192.168.99.100:8080}
+WEB_URL=${1:-http://192.168.99.100:8080}
 
 docker images | grep wasnd9-noprofile
 if [ $? -ne 0 ] ; then

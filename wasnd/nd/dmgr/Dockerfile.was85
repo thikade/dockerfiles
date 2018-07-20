@@ -14,7 +14,7 @@
 # limitations under the License.                                          #
 ###########################################################################
 
-FROM was85-noprofile
+FROM wasnd85-noprofile
 
 # based on https://github.com/WASdev/ci.docker.websphere-traditional/
 MAINTAINER thikade <thomas.hikade@gmail.com>

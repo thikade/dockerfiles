@@ -21,7 +21,7 @@ services:
 
 
   wasnd_install_step2:
-    image: was9-noprofile
+    image: wasnd9-noprofile
     hostname: dmgr8
     build:
       context: ./install

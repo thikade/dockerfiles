@@ -1,17 +1,16 @@
 #!/bin/bash
 
-WEB_URL=http://192.168.99.100:8080
+WEB_URL=${$1:-http://192.168.99.100:8080}
 
-docker images | grep was9-noprofile
+docker images | grep wasnd9-noprofile
 if [ $? -ne 0 ] ; then
 
     if [ ! -f "install/was9.tar" ]; then
-      # cd ~/Documents/GitHub/dockerfiles/wasnd/network-deployment/
       if docker ps | grep caddy ; then
           echo "caddy is running"
       else
           echo "starting caddy"
-          docker run -d  --name caddy -p 8080:8080 -v /INSTALL_E:/data caddy
+          docker run -d  --name caddy -p 8080:8080 -v /INSTALL:/data caddy
       fi
 
       curl -sSo /dev/null  $WEB_URL/WASND
@@ -53,7 +52,7 @@ if [ $? -ne 0 ] ; then
 
     echo "creating the final WAS v9 Docker base image ..."
     docker-compose -f docker-compose-build-was9.yml build wasnd_install_step2
-    docker images | grep was9-noprofile
+    docker images | grep wasnd9-noprofile
     if [ $? -eq 0 ] ; then
       echo "WASv9 base image created successfully!"
       echo "removing install/was9.tar"

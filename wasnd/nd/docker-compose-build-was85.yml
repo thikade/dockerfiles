@@ -22,7 +22,7 @@ services:
       - was8
 
   wasnd_install_step2:
-    image: was85-noprofile
+    image: wasnd85-noprofile
     hostname: dmgr
     build:
       context: ./install

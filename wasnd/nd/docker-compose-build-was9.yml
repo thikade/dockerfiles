@@ -18,11 +18,12 @@ services:
         group: wasadmin
         URL: http://192.168.99.100:8080/WASND
         REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9007,http://192.168.99.100:8080/WASND/JDK-80511
-
+    networks:
+      - was9
 
   wasnd_install_step2:
     image: wasnd9-noprofile
-    hostname: dmgr8
+    hostname: dmgr
     build:
       context: ./install
       dockerfile: Dockerfile.v9.install
@@ -30,20 +31,20 @@ services:
         WASVERSION: 9.0.0.7
         user: wasadmin
         group: wasadmin
-    # depends_on:
-    #   - wasnd_install_step1
+    networks:
+      - was9
 
 
   dmgr:
     image: wasnd9-dmgr
     container_name: dmgr
-    hostname: dmgr8
+    hostname: dmgr
     build:
       context: ./dmgr
       dockerfile: Dockerfile.was9
       args:
         PROFILE_NAME: Dmgr01
-        CELL_NAME: DefaultCell9
+        CELL_NAME: DefaultCell
         NODE_NAME: ManagerNode
     # environment:
     #   DUMMY: test
@@ -75,7 +76,7 @@ services:
   node01:
     image: wasnd9-node01
     container_name: node01
-    hostname: node801
+    hostname: node01
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
@@ -83,7 +84,7 @@ services:
         PROFILE_NAME: Custom
     environment:
       NODE_NAME: CustomNode01
-      DMGR_HOST: dmgr8
+      DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:
       - 2809
@@ -112,7 +113,7 @@ services:
   node02:
     image: wasnd9-node02
     container_name: node02
-    hostname: node802
+    hostname: node02
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
@@ -120,7 +121,7 @@ services:
         PROFILE_NAME: Custom
     environment:
       NODE_NAME: CustomNode02
-      DMGR_HOST: dmgr8
+      DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:
       - 2809

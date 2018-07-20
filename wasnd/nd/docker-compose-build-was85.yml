@@ -42,11 +42,11 @@ services:
       dockerfile: Dockerfile.was85
       args:
         PROFILE_NAME: Dmgr01
-        CELL_NAME: DefaultCell01
-        # NODE_NAME: ManagerNode01
+        CELL_NAME: DefaultCell
+        NODE_NAME: ManagerNode
         # HOST_NAME: localhost
-    environment:
-      DUMMY: test
+    # environment:
+    #   DUMMY: test
     expose:
       - "9060"
       - "9043"
@@ -82,7 +82,7 @@ services:
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: CustomNode01
+      NODE_NAME: Node01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:
@@ -113,14 +113,13 @@ services:
     image: wasnd85-node02
     container_name: node02
     hostname: node02
-    # container_name: new-node02
     build:
       context: ./custom
       dockerfile: Dockerfile.was85
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: CustomNode02
+      NODE_NAME: Node02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:

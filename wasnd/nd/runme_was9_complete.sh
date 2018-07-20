@@ -77,3 +77,11 @@ docker images | grep wasnd9-node02 || docker-compose -f docker-compose-build-was
 docker-compose -f docker-compose-build-was9.yml up -d node02
 sleep 120
 echo "Container node02 is started"
+
+
+docker commit dmgr wasnd9-cell-dmgr
+docker commit node01 wasnd9-cell-node01
+docker commit node02 wasnd9-cell-node02
+
+docker images| grep "wasnd9-cell"
+echo -e "\n*** WASv9 CELL images commited. All operations finished!\n"

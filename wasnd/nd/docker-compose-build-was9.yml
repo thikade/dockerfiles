@@ -83,7 +83,7 @@ services:
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: CustomNode01
+      NODE_NAME: Node01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:
@@ -120,7 +120,7 @@ services:
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: CustomNode02
+      NODE_NAME: Node02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:

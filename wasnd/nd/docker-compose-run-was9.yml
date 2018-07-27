@@ -15,8 +15,8 @@ services:
 
     # image: thikade/openldap:1.1.7-imported
     image: osixia/openldap:1.2.1
-    container_name: ldap
-    hostname: ldap
+    container_name: ldap1
+    hostname: ldap1
     environment:
       LDAP_ORGANISATION: 2i
       LDAP_DOMAIN: 2i.at

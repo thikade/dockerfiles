@@ -47,6 +47,20 @@ uid: a02
 sn: User a02
 userPassword: a02
 
+dn: cn=awasconfig,ou=users,ou=orgA,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: awasconfig
+uid: awasconfig
+sn: User awasconfig
+userPassword: awasconfig
+
+dn: cn=awasmonitor,ou=users,ou=orgA,dc=2i,dc=at
+objectClass: inetOrgPerson
+cn: awasmonitor
+uid: awasmonitor
+sn: User awasmonitor
+userPassword: awasmonitor
+
 #### GROUPS
 
 dn: ou=groups,ou=orgA,dc=2i,dc=at
@@ -62,6 +76,16 @@ dn: cn=a02,ou=groups,ou=orgA,dc=2i,dc=at
 objectClass: groupOfNames
 cn: a02
 member: cn=a02,ou=users,ou=orgA,dc=2i,dc=at
+
+dn: cn=wasadmins,ou=groups,ou=orgA,dc=2i,dc=at
+objectClass: groupOfNames
+cn: wasadmins
+member: cn=awasadmin,ou=users,ou=orgA,dc=2i,dc=at
+
+dn: cn=wasmonitors,ou=groups,ou=orgA,dc=2i,dc=at
+objectClass: groupOfNames
+cn: wasmonitors
+member: cn=awasmonitor,ou=users,ou=orgA,dc=2i,dc=at
 
 
 ####################################

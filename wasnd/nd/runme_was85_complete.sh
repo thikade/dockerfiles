@@ -73,22 +73,66 @@ sleeptime=10
 maxwait=300
 
 
-
 docker images | grep wasnd85-dmgr || docker-compose -f docker-compose-build-was85.yml build dmgr
 docker-compose -f docker-compose-build-was85.yml up -d dmgr
-sleep 120
+
+i=0
+while (( ($i * $sleeptime) < $maxwait )); do
+    sleep $sleeptime
+    let i=i+1
+    echo -e "\n\n all log entries from dmgr container ..."
+    docker-compose -f docker-compose-build-was85.yml logs dmgr 
+    docker-compose -f docker-compose-build-was85.yml logs dmgr | grep 'DMGR SETUP COMPLETE'
+    rc=$?
+    test $rc -eq 0 && break
+done
+if [ $rc -gt 0 ]; then
+  echo "\n ** err during dmgr startup"
+  exit 99
+fi
+##### sleep 120
 echo "Container dmgr is started. Press any key to continue ..."
 ##### read hhue
 
 docker images |  grep wasnd85-node01 || docker-compose -f docker-compose-build-was85.yml build node01
 docker-compose -f docker-compose-build-was85.yml up -d node01
-sleep 180
+
+i=0
+while (( ($i * $sleeptime) < $maxwait )); do
+    sleep $sleeptime
+    let i=i+1
+    echo -e "\n\n all log entries from node01 container ..."
+    docker-compose -f docker-compose-build-was85.yml logs node01
+    docker-compose -f docker-compose-build-was85.yml logs node01 | egrep 'NODE RECONFIG COMPLETE'
+    rc=$?
+    test $rc -eq 0 && break
+done
+if [ $rc -gt 0 ]; then
+  echo "\n ** err during node01 initial startup"
+  exit 98
+fi
+##### sleep 180
 echo "Container node01 is started. Press any key to continue ..."
 ##### read hhue
 
 docker images |  grep wasnd85-node02 || docker-compose -f docker-compose-build-was85.yml build node02
 docker-compose -f docker-compose-build-was85.yml up -d node02
-sleep 240
+
+i=0
+while (( ($i * $sleeptime) < $maxwait )); do
+    sleep $sleeptime
+    let i=i+1
+    echo -e "\n\n all log entries from node02 container ..."
+    docker-compose -f docker-compose-build-was85.yml logs node02
+    docker-compose -f docker-compose-build-was85.yml logs node02 | egrep 'NODE RECONFIG COMPLETE'
+    rc=$?
+    test $rc -eq 0 && break
+done
+if [ $rc -gt 0 ]; then
+  echo "\n ** err during node02 initial startup"
+  exit 98
+fi
+##### sleep 240
 echo "Container node02 is started. Press any key to continue ..."
 ##### read hhue
 

@@ -1,0 +1,50 @@
+version: '3'
+
+networks:
+   wxs86:
+#     # driver: bridge
+     external: true
+
+services:
+
+  wxs86_install_centos:
+    image: wxs86_centos
+    hostname: wxs86
+    build:
+      context: ./install
+      dockerfile: Dockerfile.centos.prereq
+    networks:
+      - wxs86
+
+
+  wxs86_install_step1:
+    image: wxs86_delete_me
+    hostname: wxs86
+    build:
+      context: ./install
+      dockerfile: Dockerfile.wxs86.prereq
+      args:
+        user: wxsadmin
+        group: wxsadmin
+        SERVER_VERSION: com.ibm.websphere.WXS.v86
+        CLIENT_VERSION: com.ibm.websphere.WXSCLIENT.v86
+        SERVER_FIX_LIST: "8.6.1.2-WS-WXSAll-IFPI88192_8.6.1002.20171001_2326 8.6.1.2-WS-WXSStandaloneAll-LinuxX64-IFPH00404_8.6.1002.20180712_2003"
+        CLIENT_FIX_LIST: "8.6.1.2-WS-WXSAll-IFPI88192_8.6.1002.20171001_2326 8.6.1.2-WS-WXSStandaloneAll-LinuxX64-IFPH00404_8.6.1002.20180712_2003"
+        URL: http://192.168.99.100:8080/WASND
+        REPOS: http://192.168.99.100:8080/WASND/WXS_8610/,http://192.168.99.100:8080/WASND/WXS_8612/,http://192.168.99.100:8080/WASND/WXS_CLIENT_8612/,http://192.168.99.100:8080/WASND/WXS_FIXES/8.6.1.2-WS-WXS-LinuxX64-IFPI83531.zip,http://192.168.99.100:8080/WASND/WXS_FIXES/8.6.1.2-WS-WXSAll-IFPI88192.zip,http://192.168.99.100:8080/WASND/WXS_FIXES/8.6.1.2-WS-WXS-LinuxX64-IFPI96369.zip,http://192.168.99.100:8080/WASND/WXS_FIXES/8.6.1.2-WS-WXS-LinuxX64-IFPH00404.zip
+    networks:
+      - wxs86
+
+  wxs86_install_step2:
+    image: wxs86_standalone
+    hostname: wxs86
+    build:
+      context: ./install
+      dockerfile: Dockerfile.wxs86.install
+      args:
+        WXS_VERSION: 8.6.1.2
+        user: wxsadmin
+        group: wxsadmin
+    networks:
+      - wxs86
+

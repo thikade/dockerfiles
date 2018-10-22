@@ -1,0 +1,33 @@
+###################################################################################
+##
+## Create a WXS v8.6 container image
+##
+####################################################################################
+
+FROM wxs86_centos:latest
+
+MAINTAINER Hermann Huebler "hhuebler@2innovate.at"
+
+ARG WXS_VERSION=WAS_version_missing
+LABEL WXS_VERSION=$WXS_VERSION
+
+ARG user
+ARG group
+
+RUN    yum -y update \
+    && yum clean all \
+    && rm -rf /var/cache/yum \
+    && echo "User: ${user}" \
+    && echo "Group: ${group}" \
+    && groupadd $group \
+    && useradd $user -g $group -m \
+    && mkdir /work \
+    && chown -R $user:$group /work
+
+USER $user
+
+ADD wxs8612.tar /
+
+ENV PATH /opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin:$PATH
+
+EXPOSE 2809 6600 6601 1099

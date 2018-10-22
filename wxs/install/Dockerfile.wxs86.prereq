@@ -1,0 +1,70 @@
+###################################################################################
+##
+## Create a container image with WebSphere Extreme Scale v8.6 installed
+##
+####################################################################################
+
+FROM wxs86_centos:latest
+
+MAINTAINER Hermann Huebler "hhuebler@2innovate.at"
+
+ARG user=wxsadmin
+ARG group=wxsadmin
+
+RUN groupadd $group && useradd $user -g $group -m \
+    && chown -R $user:$group /var /opt /tmp
+
+USER $user
+
+ARG URL
+ARG REPOS
+ARG SERVER_VERSION
+ARG CLIENT_VERSION
+ARG SERVER_FIX_LIST
+ARG CLIENT_FIX_LIST
+
+###################### IBM Installation Manager ##########################
+
+# Install IBM Installation Manager
+RUN   echo "URL is: $URL" && echo "REPOS is: $REPOS" && echo "SERVER_FIX_LIST is: $SERVER_FIX_LIST" && echo "CLIENT_FIX_LIST is: $CLIENT_FIX_LIST" \
+      && wget -q $URL/agent.installer.linux.gtk.x86_64_1.8.9001.20180709_1302.zip -O /tmp/IM.zip \
+      && echo "Pulled IM image" \
+      && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
+      && echo "Unpacked IM image" \
+      && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
+        -installationDirectory "/opt/IBM/InstallationManager"  \
+        -dataLocation "/var/ibm/InstallationManager" -showProgress \
+      && rm -fr /tmp/IM.zip /tmp/im
+
+### IBM WebSphere eXtreme scale ######################
+
+# Install IBM WebSphere eXtreme scale server 8.6.1.2 + Fixes
+RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+          -acceptLicense install $SERVER_VERSION \
+          -repositories $REPOS \
+          -installationDirectory /opt/IBM/WebSphere/eXtremeScale/server \
+          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+          -acceptLicense install $SERVER_FIX_LIST \
+          -repositories $REPOS \
+          -installationDirectory /opt/IBM/WebSphere/eXtremeScale/server \
+          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
+
+# Install IBM WebSphere eXtreme scale client 8.6.1.2 + Fixes
+RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+          -acceptLicense install $CLIENT_VERSION \
+          -repositories $REPOS \
+          -installationDirectory /opt/IBM/WebSphere/eXtremeScale/client \
+          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+          -acceptLicense install $CLIENT_FIX_LIST \
+          -repositories $REPOS \
+          -installationDirectory /opt/IBM/WebSphere/eXtremeScale/client \
+          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long > /opt/IBM/WebSphere/eXtremeScale/installedPackages.log 2>&1
+
+CMD ["tar","cvf","/tmp/wxs8612.tar","/opt/IBM/WebSphere/eXtremeScale"]

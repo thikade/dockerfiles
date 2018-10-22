@@ -17,7 +17,12 @@ services:
         user: wasadmin
         group: wasadmin
         URL: http://192.168.99.100:8080/WASND
-        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9007,http://192.168.99.100:8080/WASND/JDK-80511
+        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9009,http://192.168.99.100:8080/WASND/JDK-80522
+        WXS_SERVER_VERSION: com.ibm.websphere.WXS.was8.v86
+        WXS_CLIENT_VERSION: com.ibm.websphere.WXSCLIENT.was8.v86
+        WXS_SERVER_FIX_LIST: "8.6.1.2-WS-WXSAll-IFPI88192_8.6.1002.20171001_2326"
+        WXS_CLIENT_FIX_LIST: "8.6.1.2-WS-WXSAll-IFPI88192_8.6.1002.20171001_2326"
+        WXS_REPOS: http://192.168.99.100:8080/WASND/WXS_8610/,http://192.168.99.100:8080/WASND/WXS_8612/,http://192.168.99.100:8080/WASND/WXS_WAS_8612/,http://192.168.99.100:8080/WASND/WXS_WAS_CLIENT_8612/,http://192.168.99.100:8080/WASND/WXS_WAS_FIXES/8.6.1.2-WS-WXSAll-IFPI88192.zip
     networks:
       - was9
 
@@ -28,7 +33,7 @@ services:
       context: ./install
       dockerfile: Dockerfile.v9.install
       args:
-        WASVERSION: 9.0.0.7
+        WASVERSION: 9.0.0.9
         user: wasadmin
         group: wasadmin
     networks:

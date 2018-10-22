@@ -72,7 +72,7 @@ addNodeAndUpdateHostName()
 startNode()
 {
      # Start the node
-     echo "Starting nodeagent.................."
+     echo "Starting nodeagent for profile ${PROFILE_NAME} ............."
      /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/startNode.sh
 
      # Exit the container , if nodeagent startup fails

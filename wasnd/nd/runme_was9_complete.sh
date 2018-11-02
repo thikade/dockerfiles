@@ -78,7 +78,7 @@ fi
 #
 docker images | grep wasnd9-dmgr || docker-compose -f docker-compose-build-was9.yml build dmgr
 docker-compose -f docker-compose-build-was9.yml up -d dmgr
-sleep 120
+sleep 180
 echo "Container dmgr is started"
 
 docker images | grep wasnd9-node01 || docker-compose -f docker-compose-build-was9.yml build node01
@@ -88,7 +88,7 @@ echo "Container node01 is started"
 
 docker images | grep wasnd9-node02 || docker-compose -f docker-compose-build-was9.yml build node02
 docker-compose -f docker-compose-build-was9.yml up -d node02
-sleep 240
+sleep 180
 echo "Container node02 is started"
 
 

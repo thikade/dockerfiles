@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 #####################################################################################
 #                                                                                   #
 #  Script to update the Hostname and add the node to deployment manager             #
@@ -108,6 +109,9 @@ renameNode()
      echo "*******************************************************************"
      /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/renameNode.sh $DMGR_HOST $DMGR_PORT $NODE_NAME  $ADMIN_AUTH
 }
+#######################################################################
+## MAIN
+#######################################################################
 
 if [ "$WAIT" != "" ] && [ ! -f "/work/nodefederated" ]
 then
@@ -116,7 +120,7 @@ fi
 
 setEnv
 
-if [ -d /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs/nodeagent ]
+if [ -f "/work/nodefederated" ]
 then
      echo "******* starting node"
      startNode

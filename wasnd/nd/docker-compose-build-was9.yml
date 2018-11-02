@@ -91,6 +91,7 @@ services:
       NODE_NAME: Node01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
+      WAIT: 15
     expose:
       - 2809
       - 9402
@@ -128,6 +129,7 @@ services:
       NODE_NAME: Node02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
+      WAIT: 15
     expose:
       - 2809
       - 9402

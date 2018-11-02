@@ -31,3 +31,5 @@ ADD wxs8612.tar /
 ENV PATH /opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin:$PATH
 
 EXPOSE 2809 6600 6601 1099
+
+ENTRYPOINT ["sleep infinity"]

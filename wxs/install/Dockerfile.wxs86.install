@@ -24,12 +24,21 @@ RUN    yum -y update \
     && mkdir /work \
     && chown -R $user:$group /work
 
+COPY *.xml /work/
+
+COPY startWxs.sh /work/
+
+RUN    echo "id=$(id)" \
+    && chown -R wxsadmin:wxsadmin /work \
+    && mkdir /logs \
+    && chown -R wxsadmin:wxsadmin /logs
+
 USER $user
 
 ADD wxs8612.tar /
 
 ENV PATH /opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin:$PATH
 
-EXPOSE 2809 6600 6601 1099
+EXPOSE 2809 6600 6601 6602 6603 1099 7080 7443
 
 ENTRYPOINT ["sleep infinity"]

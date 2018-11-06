@@ -26,7 +26,11 @@ ARG CLIENT_FIX_LIST
 ###################### IBM Installation Manager ##########################
 
 # Install IBM Installation Manager
-RUN   echo "URL is: $URL" && echo "REPOS is: $REPOS" && echo "SERVER_FIX_LIST is: $SERVER_FIX_LIST" && echo "CLIENT_FIX_LIST is: $CLIENT_FIX_LIST" \
+RUN      echo "URL is: $URL"  \
+      && echo "REPOS is: $REPOS" \
+      && echo "SERVER_FIX_LIST is: $SERVER_FIX_LIST" \
+      && echo "CLIENT_FIX_LIST is: $CLIENT_FIX_LIST" \
+      && echo "Downloading IIM installation package" \
       && wget -q $URL/agent.installer.linux.gtk.x86_64_1.8.9001.20180709_1302.zip -O /tmp/IM.zip \
       && echo "Pulled IM image" \
       && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
@@ -39,7 +43,8 @@ RUN   echo "URL is: $URL" && echo "REPOS is: $REPOS" && echo "SERVER_FIX_LIST is
 ### IBM WebSphere eXtreme scale ######################
 
 # Install IBM WebSphere eXtreme scale server 8.6.1.2 + Fixes
-RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
+RUN   echo "Trying to install IBM WebSphere eXtreme scale server 8.6.1.2 + Fixes ..." \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
       &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
           -acceptLicense install $SERVER_VERSION \
           -repositories $REPOS \
@@ -53,7 +58,8 @@ RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -rep
       &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
 
 # Install IBM WebSphere eXtreme scale client 8.6.1.2 + Fixes
-RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
+RUN   echo "Trying to install IBM WebSphere eXtreme scale client 8.6.1.2 + Fixes ..." \
+      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
       &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
           -acceptLicense install $CLIENT_VERSION \
           -repositories $REPOS \

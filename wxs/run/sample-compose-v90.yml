@@ -1,0 +1,224 @@
+version: '3'
+
+networks:
+  was9:
+    driver: bridge
+
+services:
+
+  ldap1:
+    image: s008aa39r:18444/ldap:latest
+    container_name: ldap1.v9.docker.container
+    hostname: ldap1
+    environment:
+      LDAP_ORGANISATION: 2i
+      LDAP_DOMAIN: 2i.at
+      LDAP_ADMIN_PASSWORD: admin
+    expose:
+      - "389"
+      - "636"
+    command: --copy-service --loglevel=info
+    networks:
+      - was9
+
+  ldap2:
+    image: s008aa39r:18444/ldap:latest
+    container_name: ldap2.v9.docker.container
+    hostname: ldap2
+    environment:
+      LDAP_ORGANISATION: 2i
+      LDAP_DOMAIN: 2i.at
+      LDAP_ADMIN_PASSWORD: admin
+    expose:
+      - "389"
+      - "636"
+    command: --copy-service --loglevel=info
+    networks:
+      - was9
+
+  dmgr:
+    image: s008aa39r:18444/centos_ws:was_9.0.0.9_dmgr.1.1.wxs
+##### image: eu.gcr.io/was-config-tool/was_9.0.0.9_dmgr:1.1
+    container_name: dmgr.v9.docker.container
+    hostname: dmgr
+    entrypoint:
+      - /bin/bash
+      - /workspace/ci-gcloud/bin/startContainerNoCi.sh
+      - -exitOnServerStop false
+    volumes:
+       - /opt/wasconfig:/workspace
+
+    environment:
+      WASCONFIG_RUNAS_USER : wasadmin
+      WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
+      WASCONFIG_PROFILE_PATH : /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
+      WASCONFIG_PROFILE_NAME : Dmgr01
+      WASCONFIG_ADMIN_HOST : dmgr
+      WASCONFIG_ADMIN_PORT : 8879
+      WASCONFIG_ADMIN_USER : wasadmin
+      WASCONFIG_ADMIN_PASS : wasadmin
+    expose:
+      - "9060"
+      - "9043"
+      - "9809"
+      - "8879"
+      - "9632"
+      - "9401"
+      - "9403"
+      - "9402"
+      - "9100"
+      - "7277"
+      - "9352"
+      - "5555"
+      - "7060"
+      - "11005"
+      - "11006"
+      - "9420"
+    ports:
+      - "9060:9060"
+      - "9043:9043"
+    networks:
+      - was9
+
+  node01:
+    image: eu.gcr.io/was-config-tool/was_9.0.0.9_node01:1.1
+    container_name: node01.v9.docker.container
+    depends_on:
+      - dmgr
+    environment:
+      NODE_NAME: CustomNode01
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    hostname: node01
+    expose:
+      - 2809
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043
+      - 9080
+      - 9443
+    ports:
+      - "9080:9080"
+      - "9443:9443"
+    networks:
+      - was9
+
+  node02:
+    image: eu.gcr.io/was-config-tool/was_9.0.0.9_node02:1.1
+    container_name: node02.v9.docker.container
+    hostname: node02
+    depends_on:
+      - dmgr
+    environment:
+      NODE_NAME: CustomNode02
+      DMGR_HOST: dmgr
+      DMGR_PORT: "8879"
+    expose:
+      - 2809
+      - 9402
+      - 9403
+      - 9353
+      - 9633
+      - 9100
+      - 11004
+      - 11003
+      - 9401
+      - 7276
+      - 7286
+      - 5558
+      - 5578
+      - 5060
+      - 5061
+      - 8880
+      - 9060
+      - 9043
+      - 9080
+      - 9443
+    networks:
+      - was9
+
+  wxsihs851:
+    container_name: wxsihs851.v9.docker.container
+    entrypoint: /bin/startContainer.sh -exitOnServiceStop false -wpHostName node1 -wpPortPrefix ${WP85_WAS_PORT_PREFIX_1}
+    hostname: wxsihs851
+    image: s008aa39r:18444/centos_ws:ihs.8.5.5.13.wxs
+##### image: s008aa39r:18444/centos_ihs:8.5.5.13
+    depends_on:
+      - dmgr
+    expose:
+      - 80
+      - 443
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - was9
+
+  wxs01:
+    container_name: wxs01.v9.docker.container
+    entrypoint:
+      - /bin/bash
+      - /work/startWxs.sh
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server10 -listenerPort 2809 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -jvmArgs -Xmx256m'
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server11 -listenerPort 2810 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -jvmArgs -Xmx256m'
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container10 -catalogServiceEndPoints wxs01:2809,wxs01:2810,wxs02:2809,wxs02:2810 -objectgridFile /work/objectgrid.xml -deploymentPolicyFile /work/deployment.xml -jvmArgs -Xmx256m'
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container11 -catalogServiceEndPoints wxs01:2809,wxs01:2810,wxs02:2809,wxs02:2810 -objectgridFile /work/objectgrid.xml -deploymentPolicyFile /work/deployment.xml -jvmArgs -Xmx256m'
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startConsoleServer.sh'
+    hostname: wxs01
+    image: s008aa39r:18444/wxs86_standalone:latest
+    depends_on:
+      - dmgr
+    expose:
+      - 7080
+      - 7443
+      - 2809
+      - 2810
+      - 6600
+      - 6601
+      - 6602
+      - 6603
+    ports:
+      - "7080:7080"
+      - "7443:7443"
+    networks:
+      - was9
+
+  wxs02:
+    container_name: wxs02.v9.docker.container
+    entrypoint:
+      - /bin/bash
+      - /work/startWxs.sh
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server20 -listenerPort 2809 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession -heartbeat 10  -jvmArgs -Xmx256m'
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server21 -listenerPort 2810 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -heartbeat 10 -jvmArgs -Xmx256m'
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container20 -catalogServiceEndPoints wxs02:2809,wxs02:2810,wxs01:2809,wxs01:2810 -objectgridFile /work/objectgrid.xml -deploymentPolicyFile /work/deployment.xml -jvmArgs -Xmx256m -jvmArgs -Xmx256m '
+      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container21 -catalogServiceEndPoints wxs02:2809,wxs02:2810,wxs01:2809,wxs01:2810 -objectgridFile /work/objectgrid.xml -deploymentPolicyFile /work/deployment.xml -jvmArgs -Xmx256m'
+    hostname: wxs02
+    image: s008aa39r:18444/wxs86_standalone:latest
+    depends_on:
+      - dmgr
+    expose:
+      - 7080
+      - 7443
+      - 2809
+      - 2810
+      - 6600
+      - 6601
+      - 6602
+      - 6603
+    networks:
+      - was9
+

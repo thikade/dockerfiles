@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objectGridConfig xmlns="http://ibm.com/ws/objectgrid/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ibm.com/ws/objectgrid/config ../objectGrid.xsd">
+    <objectGrids>
+        <objectGrid name="session" txTimeout="30">
+            <bean className="com.ibm.ws.xs.sessionmanager.SessionHandleManager" id="ObjectGridEventListener"/>
+            <backingMap copyMode="COPY_TO_BYTES" lockStrategy="PESSIMISTIC" name="objectgridSessionMetadata" pluginCollectionRef="objectgridSessionMetadata" readOnly="false" timeToLive="3600" ttlEvictorType="LAST_ACCESS_TIME"/>
+            <backingMap copyMode="COPY_TO_BYTES" lockStrategy="PESSIMISTIC" name="objectgridSessionAttribute.*" readOnly="false" template="true" ttlEvictorType="NONE"/>
+            <backingMap copyMode="COPY_TO_BYTES" lockStrategy="PESSIMISTIC" name="objectgridSessionTTL.*" readOnly="false" template="true" timeToLive="3600" ttlEvictorType="LAST_ACCESS_TIME"/>
+            <backingMap copyMode="COPY_TO_BYTES" lockStrategy="PESSIMISTIC" name="ASPNET.SessionState.*" readOnly="false" template="true" timeToLive="3600" ttlEvictorType="LAST_ACCESS_TIME"/>
+        </objectGrid>
+    </objectGrids>
+    <backingMapPluginCollections>
+        <backingMapPluginCollection id="objectgridSessionMetadata">
+            <bean className="com.ibm.ws.xs.sessionmanager.MetadataMapListener" id="MapEventListener"/>
+        </backingMapPluginCollection>
+    </backingMapPluginCollections>
+</objectGridConfig>

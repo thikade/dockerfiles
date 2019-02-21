@@ -1,5 +1,7 @@
-test -z "$SSH_AGENT_PID" && eval $(ssh-agent -s)
-ssh-add ~/.ssh/id_rsa
+#test -z "$SSH_AGENT_PID" && eval $(ssh-agent -s)
+#ssh-add ~/.ssh/id_rsa
+
+. ~/startSSHAgentUnique.sh  ~/.ssh/id_rsa  ansible
 
 export PS1="\u@\h \w > "
 export TERM=xterm

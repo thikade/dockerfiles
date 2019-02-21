@@ -1,43 +1,43 @@
-FROM        ubuntu:latest
+FROM ubuntu:latest
+# tag as thikade/ansible:2.7-ubuntu
+
 MAINTAINER  thikade "thomas.hikade@gmail.com"
 
-# Update system 
-# RUN DEBIAN_FRONTEND=noninteractive apt-get update 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
-        wget curl vim \
-        dnsutils  net-tools  iputils-ping \
-        python-pip python-dev  python-apt \
-        software-properties-common \
-        dmidecode  \
-        ansible \
-        openssh-server openssh-client \
-        supervisor \
-        && \
-        apt-get -yqq clean && \
-        apt-get -yqq purge && \
-        rm -rf /tmp/* /var/tmp/* && \
-        rm -rf /var/lib/apt/lists/*
+# Update system
+RUN DEBIAN_PRIORITY=critical DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_PRIORITY=critical DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        wget curl less \
+        vim vim-editorconfig vim-python-jedi vim-syntastic \
+        dnsutils net-tools iputils-ping build-essential \
+        python2.7 python-pip python-virtualenv virtualenv python-setuptools python-dev \
+        software-properties-common openssh-client \
+        gzip man debianutils ncurses-base ncurses-term ncurses-bin inotify-tools \
+	openssh-server openssh-client \
+	supervisor \
+	&& \
+    apt-get -yqq clean && apt-get -yqq purge && \
+    rm -rf /tmp/* /var/tmp/* && \
+    rm -rf /var/lib/apt/lists/*
 
-# copy configs
+
+# RUN pip install --upgrade pip && pip install ansible
+RUN pip install ansible
+RUN mkdir -p /var/run/sshd /var/log/supervisor /root/.ssh
+
+ADD volumes/default/ansible-ssh-keys/id* /root/.ssh/
+ADD volumes/default/git/gitconfig /etc/gitconfig
+ADD volumes/default/.bashrc /root/.bashrc
+ADD volumes/default/startSSHAgentUnique.sh /root/
+
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-RUN mkdir -p /var/run/sshd /var/log/supervisor /home/root/.ssh /opt/ansible/extlib /opt/ansible/src
-COPY sshkeys/* /home/root/.ssh/
-RUN cp /home/root/.ssh/id_rsa.pub /home/root/.ssh/authorized_keys && chmod 700 /home/root/.ssh && chmod 600 /home/root/.ssh/authorized_keys /home/root/.ssh/id*
+ADD volumes/default/ansible_hosts /etc/ansible/hosts
+ADD volumes/default/ansible.cfg /etc/ansible/
+
+RUN chmod 600 /root/.ssh/id_rsa && chmod 644 /root/.ssh/id_rsa.pub && touch /root/.ssh/known_hosts && chmod 644 /root/.ssh/known_hosts
+RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
 
-EXPOSE 22 
+WORKDIR /root
+EXPOSE 22
 
-
-ENV ANSIBLE_LIBRARY  /opt/ansible/extlib
- 
-# Expose volumes
-VOLUME ["/opt/ansible/extlib" , "/opt/ansible/src" ]
-
-WORKDIR "/opt/ansible/src"
-
-#EXPOSE 4505 4506 8080 8081
-#COPY start.sh /start.sh
-#CMD ["bash", "/start.sh"]
-
-# CMD tail -n0 -f /etc/hosts
 CMD ["/usr/bin/supervisord"]

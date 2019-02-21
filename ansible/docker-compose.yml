@@ -8,14 +8,14 @@ services:
   ansible-master:
     build:
       context: .
-      dockerfile: Dockerfile.ansible_via_pip
+      dockerfile: Dockerfile
       # args:
       #  URL: http://192.168.99.100:8080/
-    image: thikade/ansible:2.5-ubuntu
+    image: thikade/ansible:2.7-ubuntu
     container_name: ansible-master
     hostname: ansible-master
     environment:
-      TEST : 'x'
+      ANSIBLE_HOST_KEY_CHECKING: "False"
     volumes:
       - ./volumes/default:/shared:rw
       - ../../ansible/src/ansible:/shared:rw
@@ -26,12 +26,14 @@ services:
   ansible-node01:
     build:
       context: .
-      dockerfile: Dockerfile.ansible_via_pip
+      dockerfile: Dockerfile
       # args:
       #  URL: http://192.168.99.100:8080/
-    image: thikade/ansible:2.5-ubuntu
+    image: thikade/ansible:2.7-ubuntu
     container_name: ansible-node01
     hostname: ansible-node01
+    environment:
+      ANSIBLE_HOST_KEY_CHECKING: "False"
     expose:
       - "22"
       - "80"

@@ -45,7 +45,7 @@ objects:
     resources:
       requests:
         storage: ${VOLUME_CAPACITY}
-    volumeName: pv-${JENKINS_SERVICE_NAME}
+    volumeName: ${JENKINS_VOLUME_NAME}
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -205,4 +205,8 @@ parameters:
 - description: Name of the ImageStreamTag to be used for the Jenkins image.
   displayName: Jenkins ImageStreamTag
   name: JENKINS_IMAGE_STREAM_TAG
-  value: jenkins-blueocean:latest
+  value: jenkins:latest
+- description: Name of the PV to match
+  displayName: Jenkins PV name
+  name: JENKINS_VOLUME_NAME
+  value: pv0001

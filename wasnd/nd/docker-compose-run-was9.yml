@@ -30,7 +30,7 @@ services:
     volumes:
       - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
     # entrypoint: "sh -c 'while true; do sleep 60; echo hello; done'"
-    command: --copy-service --loglevel=info
+    command: --copy-service --loglevel=debug
     networks:
       - was9
 

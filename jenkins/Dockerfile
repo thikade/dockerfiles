@@ -16,12 +16,8 @@ RUN yum repolist > /dev/null && \
     chown -R 1001:root maven* && chown -R 1001:root /var/jenkins_home/ 
     
 
-COPY cert/cacerts /tmp/cacerts
-
-RUN  /usr/lib/jvm/java-1.8.0/bin/keytool -importkeystore -srcstorepass changeit -deststorepass changeit -srckeystore /tmp/cacerts -destkeystore /etc/pki/ca-trust/extracted/java/cacerts
 
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0
-#ENV PATH=${M2_HOME}/bin:${PATH}
     
 
 USER 1000

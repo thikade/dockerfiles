@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+    stages {
+        stage('nvm tests') {
+            steps {
+                nvm('v10.16.0') {
+                    echo "hello nvm"
+                    sh "node --version"
+                    sh "npm install gulp"
+                }
+            }
+        }
+        stage('maven tests') {
+            steps {
+                withMaven(maven:'M354') {
+                    sh "mvn --version"
+                }
+            }
+        }
+    }
+    
+}

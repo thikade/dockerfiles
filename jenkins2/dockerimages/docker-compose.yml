@@ -1,0 +1,21 @@
+version: '3'
+
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # args:
+      #  URL: http://192.168.99.100:8080/
+    image: jenkins2
+    container_name: jenkins
+    hostname: jenkins
+    volumes:
+      - ./data/jenkins_home:/var/jenkins_home:rw    
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+#    environment:
+ 

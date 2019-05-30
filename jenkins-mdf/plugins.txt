@@ -3,4 +3,7 @@ job-import-plugin:3.2
 slack:2.23
 gitlab-plugin:1.5.12
 sonar:2.9
+nvm-wrapper
+pipeline-maven
+maven-plugin
 

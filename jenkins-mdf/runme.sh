@@ -13,3 +13,5 @@ oc new-build https://github.com/thikade/dockerfiles.git --name=jenkins -l app=je
 
 # process template and run jenkins
 oc process -f jenkins-template.yml -p JENKINS_SERVICE_NAME=jenkins -p JENKINS_VOLUME_NAME=pv0001 | oc -n custom-jenkins create -f -
+
+oc create -f pipeline_buildconfig.yml

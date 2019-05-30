@@ -14,4 +14,5 @@ oc new-build openshift/jenkins-2-centos7:v3.11~https://github.com/thikade/docker
 # use docker build to build our own jenkins image
 oc new-build https://github.com/thikade/dockerfiles.git --name=jenkins --strategy=docker  --context-dir=jenkins  --image-stream=jenkins-plugins:latest
 
-oc start-build jenkins-plugins
+# process template and run jenkins
+oc process -f jenkins-template.yml | oc -n custom-jenkins create -f -

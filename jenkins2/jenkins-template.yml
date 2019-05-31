@@ -45,7 +45,7 @@ objects:
     resources:
       requests:
         storage: ${VOLUME_CAPACITY}
-    volumeName: ${JENKINS_VOLUME_NAME}
+#    volumeName: ${JENKINS_VOLUME_NAME}
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:

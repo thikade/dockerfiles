@@ -1,0 +1,38 @@
+warning: Cannot check if git requires authentication.
+apiVersion: v1
+items:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewBuild
+    creationTimestamp: null
+    labels:
+      build: pluginstest-pipeline
+    name: pluginstest-pipeline
+  spec:
+    nodeSelector: null
+    output: {}
+    postCommit: {}
+    resources: {}
+    source:
+      contextDir: jenkins2
+      git:
+        uri: https://github.com/thikade/dockerfiles.git
+      type: Git
+    strategy:
+      jenkinsPipelineStrategy: 
+        jenkinsfilePath: Jenkinsfile
+      type: JenkinsPipeline
+    triggers:
+    - github:
+        secret: RhSRQ30u7UAz615PgPxY
+      type: GitHub
+    - generic:
+        secret: lcuB0c8kv16XuM2AGTKu
+      type: Generic
+    - type: ConfigChange
+  status:
+    lastVersion: 0
+kind: List
+metadata: {}

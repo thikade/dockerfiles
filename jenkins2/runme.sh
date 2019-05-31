@@ -17,4 +17,4 @@ oc set env --list dc/jenkins-v2
 PODNAME=$(oc get pod -o name -l name=jenkins-v2)
 oc logs $PODNAME | grep plugin
 
-oc new-build
+oc create -f pipeline_buildconfig.yml

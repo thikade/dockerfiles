@@ -4,6 +4,9 @@ pipeline {
         maven 'M361'
         // jdk 'jdk8'
     }
+    options {
+        skipDefaultCheckout true
+    }    
     stages {
         stage('nvm tests') {
             steps {

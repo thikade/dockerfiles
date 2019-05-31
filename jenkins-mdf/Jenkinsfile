@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    tools {
+        maven 'M361'
+        // jdk 'jdk8'
+    }
     stages {
         stage('nvm tests') {
             steps {
@@ -12,11 +16,8 @@ pipeline {
         }
         stage('maven tests') {
             steps {
-                withMaven(maven:'M354') {
                     sh "mvn --version"
-                }
             }
         }
     }
-    
 }

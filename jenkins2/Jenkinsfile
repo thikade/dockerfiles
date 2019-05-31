@@ -21,6 +21,15 @@ pipeline {
             steps {
                     sh "mvn --version"
             }
+        }        
+        
+        stage('alternate maven version tests') {
+            tools {
+                maven 'M354'
+            }
+            steps {
+                    sh "mvn --version"
+            }
         }
     }
 }

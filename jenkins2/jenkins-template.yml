@@ -201,12 +201,12 @@ parameters:
 - description: The OpenShift Namespace where the Jenkins ImageStream resides.
   displayName: Jenkins ImageStream Namespace
   name: NAMESPACE
-  value: custom-jenkins
+  value: dummy-namespace
 - description: Name of the ImageStreamTag to be used for the Jenkins image.
   displayName: Jenkins ImageStreamTag
   name: JENKINS_IMAGE_STREAM_TAG
-  value: jenkins:latest
+  value: dummy:latest
 - description: Name of the PV to match
   displayName: Jenkins PV name
   name: JENKINS_VOLUME_NAME
-  value: pv0001
+  value: dummy

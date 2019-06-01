@@ -8,8 +8,8 @@ items:
       openshift.io/generated-by: OpenShiftNewBuild
     creationTimestamp: null
     labels:
-      build: pluginstest-pipeline
-    name: pluginstest-pipeline
+      build: plugintest-pipeline
+    name: plugintest-pipeline
   spec:
     nodeSelector: null
     output: {}

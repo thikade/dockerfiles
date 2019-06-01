@@ -1,6 +1,7 @@
 #!/bin/sh
 
-oc new-project custom-jenkins || oc project custom-jenkins
+oc delete project custom-jenkins
+oc new-project custom-jenkins
 
 
 # oc import-image openshift/jenkins-2-centos7:v3.11 --confirm
@@ -13,5 +14,4 @@ oc new-build https://github.com/thikade/dockerfiles.git --name=jenkins -l app=je
 
 # process template and run jenkins
 oc process -f jenkins-template.yml -p JENKINS_SERVICE_NAME=jenkins -p JENKINS_VOLUME_NAME=pv0001 | oc -n custom-jenkins create -f -
-
 oc create -f pipeline_buildconfig.yml

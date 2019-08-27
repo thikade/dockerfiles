@@ -17,7 +17,7 @@ services:
         user: wasadmin
         group: wasadmin
         URL: http://192.168.99.100:8080/WASND
-        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9009,http://192.168.99.100:8080/WASND/JDK-80522
+        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/90011,http://192.168.99.100:8080/WASND/JDK-80535
         WXS_SERVER_VERSION: com.ibm.websphere.WXS.was8.v86
         WXS_CLIENT_VERSION: com.ibm.websphere.WXSCLIENT.was8.v86
         WXS_SERVER_FIX_LIST: "8.6.1.2-WS-WXSAll-IFPI88192_8.6.1002.20171001_2326"

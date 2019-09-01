@@ -19,19 +19,19 @@ ARG REPOS=undefined
 ARG IM_FILE=agent.installer.lnx.gtk.x86_64_1.8.5.zip
 
 ARG WAS_VERSION=com.ibm.websphere.ND.v85
+##### ARG JDK_VERSION=com.ibm.java.jdk.v8
 ARG JDK_VERSION=com.ibm.websphere.IBMJAVA.v80
+
 
 
 ###################### IBM Installation Manager ##########################
 
-ADD --chown=1000:1000 $URL/$IM_FILE /tmp/IM.zip
-ADD --chown=1000:1000  $URL/WASND_v8.5.5_1of3.zip  /tmp/was1.zip
-ADD --chown=1000:1000  $URL/WASND_v8.5.5_2of3.zip  /tmp/was2.zip
-ADD --chown=1000:1000  $URL/WASND_v8.5.5_3of3.zip  /tmp/was3.zip
-
 # Install IBM Installation Manager
-
-RUN mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
+RUN echo "URL is: $URL" && echo "REPOS is: $REPOS" && \
+    wget -q $URL/agent.installer.linux.gtk.x86_64_1.8.9001.20180709_1302.zip -O /tmp/IM.zip \
+    && echo "Pulled IM image" \
+    && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
+    && echo "Unpacked IM image" \
     && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
       -installationDirectory "/opt/IBM/InstallationManager"  \
       -dataLocation "/var/ibm/InstallationManager" -showProgress \
@@ -39,23 +39,64 @@ RUN mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
 
 ### IBM WebSphere Application Server & IBM Java SDK ######################
 
+RUN echo "URL is: $URL" && echo "REPOS is: $REPOS" && \
+    wget -q $URL/8550.tar -O /tmp/8550.tar \
+    && echo "Pulled WAS8550 image" \
+    && mkdir /tmp/im && tar -C /tmp/im -xf /tmp/8550.tar \
+    && echo "Unpacked WAS8550 image" \
+    && rm -rf /tmp/8550.tar \
+    && wget -q $URL/85513.tar -O /tmp/85513.tar \
+    && echo "Pulled WAS85513 image" \
+    && mkdir /tmp/im13 && tar -C /tmp/im13 -xf /tmp/85513.tar \
+    && echo "Unpacked WAS85513 image" \
+    && rm -rf /tmp/85513.tar \
+    && /opt/IBM/InstallationManager/eclipse/tools/imcl install $WAS_VERSION,core.feature,ejbdeploy,thinclient,embeddablecontainer,com.ibm.sdk.6_64bit  \
+      -repositories /tmp/im/8550/BASE/repository.config,/tmp/im13/85513/BASE/repository.config \
+      -installationDirectory /opt/IBM/WebSphere/AppServer \
+      -dataLocation "/var/ibm/InstallationManager" -showProgress \
+      -accessRights nonAdmin \
+      -acceptLicense \
+      -properties \
+eclipseLocation=/opt/WebSphere/AppServer,user.import.profile=false,cic.selector.nl=en,,fr,,it,,zh,,ro,,ru,,zh_TW,,de,,ja,,pl,,es,,cs,,hu,,ko,,pt_BR,user.wasjava=java6 \
+    && rm -fr /tmp/IM.zip /tmp/im /tmp/im13 \
+    && /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
 
-# Install IBM WebSphere Application Server v85 & IBM Java SDK 8
-RUN mkdir /tmp/was && unzip  -qd /tmp/was /tmp/was1.zip && echo "unzip 1 ok." \
-    && unzip -qd /tmp/was /tmp/was2.zip && echo "unzip 2 ok." \
-    && unzip -qd /tmp/was /tmp/was3.zip && echo "unzip 3 ok."
+# RUN echo "REPOS: $REPOS" \
+#    && /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
+#      && /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+#      -acceptLicense install $WAS_VERSION \
+#      -repositories $REPOS \
+#      -installationDirectory /opt/IBM/WebSphere/AppServer \
+#      -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
 
-RUN  echo "REPO=$REPOS" && /opt/IBM/InstallationManager/eclipse/tools/imcl listAvailablePackages -repositories  /tmp/was/repository.config,$REPOS
+# RUN echo "REPOS: $REPOS" \
+#    && /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
+#      && /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+#      -acceptLicense install $JDK_VERSION \
+#      -repositories $REPOS \
+#      -installationDirectory /opt/IBM/WebSphere/AppServer \
+#      -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false \
+#    && /wp85/WebSphere/AppServer/bin/managesdk.sh  -setCommandDefault -sdkName 1.8_64 \
+#    && /wp85/WebSphere/AppServer/bin/managesdk.sh  -setNewProfileDefault -sdkName 1.8_64
 
-RUN echo "Starting WAS installation" \
-    && /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
-          -acceptLicense install $WAS_VERSION $JDK_VERSION \
-          -properties user.wasjava=java8 \
-          -repositories /tmp/was/repository.config,$REPOS \
-          -installationDirectory /opt/IBM/WebSphere/AppServer \
-          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
-
+RUN echo "URL is: $URL" && echo "REPOS is: $REPOS" && \
+    wget -q $URL/8.0.5.17-WS-IBMWASJAVA-Linux.zip -O /tmp/8.0.5.17-WS-IBMWASJAVA-Linux.zip \
+    && echo "Pulled JDK-80517 image" \
+    && mkdir /tmp/imjdk && unzip -qd /tmp/imjdk /tmp/8.0.5.17-WS-IBMWASJAVA-Linux.zip \
+    && echo "Unpacked JDK-80517 image" \
+    && rm -rf /tmp/8.0.5.17-WS-IBMWASJAVA-Linux.zip \
+    && /opt/IBM/InstallationManager/eclipse/tools/imcl listAvailablePackages -repositories /tmp/imjdk/repository.config \
+    && /opt/IBM/InstallationManager/eclipse/tools/imcl install $JDK_VERSION \
+      -repositories /tmp/imjdk/repository.config \
+      -installationDirectory /opt/IBM/WebSphere/AppServer \
+      -dataLocation "/var/ibm/InstallationManager" -showProgress \
+      -accessRights nonAdmin \
+      -acceptLicense \
+      -properties \
+eclipseLocation=/opt/WebSphere/AppServer,user.import.profile=false,cic.selector.nl=en,,fr,,it,,zh,,ro,,ru,,zh_TW,,de,,ja,,pl,,es,,cs,,hu,,ko,,pt_BR \
+    && rm -fr /tmp/imjdk/ \
+    && /opt/IBM/WebSphere/AppServer/bin/managesdk.sh  -setCommandDefault -sdkName 1.8_64 \
+    && /opt/IBM/WebSphere/AppServer/bin/managesdk.sh  -setNewProfileDefault -sdkName 1.8_64 \
+    && /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
 
 CMD ["tar","cvf","/tmp/was.tar","/opt/IBM/WebSphere/AppServer"]
-
-RUN /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long

@@ -35,6 +35,7 @@ RUN apt-get update && \
 USER $user
 
 ADD was.tar /
+ADD customRegistry.jar /opt/IBM/WebSphere/AppServer/lib/ext/customRegistry.jar
 
 ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
 

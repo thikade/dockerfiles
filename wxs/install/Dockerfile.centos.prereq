@@ -1,0 +1,58 @@
+###################################################################################
+##
+## Create a CentOS container
+##
+####################################################################################
+
+FROM centos:latest
+
+MAINTAINER Hermann Huebler "hhuebler@2innovate.at"
+
+RUN   sed -i s#override_install_langs=.*#override_install_langs=en_US.utf8:sv_SE.utf8:de_DE.utf8#g /etc/yum.conf && \
+  yum -y install bind-utils \
+  bzip2 \
+  compat-libstdc++-33.i686 compat-libstdc++-33.x86_64 \
+  curl \
+  file \
+  gcc* \
+  initscripts \
+  ksh.x86_64 \
+  less \
+  libaio.i686 \
+  libaio.x86_64 \
+  librdmacm.i686 \
+  librdmacm-static.i686 \
+  librdmacm-static.x86_64 \
+  librdmacm.x86_64 \
+  libstdc++.i686 \
+  libstdc++-static.i686 \
+  libstdc++-static.x86_64 \
+  libstdc++.x86_64 \
+  nc \
+  net-tools \
+  nfs-utils.x86_64 \
+  openibd \
+  openssh-clients.x86_64 \
+  openssl.x86_64 \
+  openssh-server.x86_64 \
+  pam.i686 \
+  pam.x86_64 \
+  python-devel \
+  rdma-ndd.x86_64 \
+  rdma.noarch \
+  rsync \
+  telnet \
+  unzip \
+  wget \
+  zip && \
+  yum -y update && \
+  yum -y reinstall glibc-common && \
+  yum clean all && \
+  sshd-keygen && \
+  echo "root:start123." | chpasswd && \
+  rm -rf /var/cache/yum && \
+  cd /dev/shm && \
+  curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" && \
+  python get-pip.py && \
+  pip install pycrypto && \
+  echo "Done updating centOS image ...."

@@ -62,7 +62,7 @@ services:
       - was9
 
   dmgr:
-    image: wasnd9-cell-dmgr
+    image: eu.gcr.io/was-config-tool/was_9.0.0.9_dmgr:1.0
     container_name: dmgr
     hostname: dmgr
     environment:
@@ -101,7 +101,7 @@ services:
       - was9
 
   node01:
-    image: wasnd9-cell-node01
+    image: eu.gcr.io/was-config-tool/was_9.0.0.9_node01:1.0
     container_name: node01
     depends_on:
       - dmgr
@@ -138,7 +138,7 @@ services:
       - was9
 
   node02:
-    image: wasnd9-cell-node02
+    image: eu.gcr.io/was-config-tool/was_9.0.0.9_node02:1.0
     container_name: node02
     hostname: node02
     depends_on:

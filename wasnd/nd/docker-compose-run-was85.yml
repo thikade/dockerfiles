@@ -62,7 +62,7 @@ services:
       - was8
 
   dmgr:
-    image: wasnd85-cell-dmgr
+    image: eu.gcr.io/was-config-tool/was_8.5.5.13_dmgr:1.0
     container_name: dmgr
     hostname: dmgr
     environment:
@@ -102,7 +102,7 @@ services:
       - was8
 
   node01:
-    image: wasnd85-cell-node01
+    image: eu.gcr.io/was-config-tool/was_8.5.5.13_node01:1.0
     container_name: node01
     depends_on:
       - dmgr
@@ -139,7 +139,7 @@ services:
       - was8
 
   node02:
-    image: wasnd85-cell-node02
+    image: eu.gcr.io/was-config-tool/was_8.5.5.13_node02:1.0
     container_name: node02
     hostname: node02
     depends_on:

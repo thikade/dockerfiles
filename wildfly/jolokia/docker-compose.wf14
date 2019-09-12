@@ -1,0 +1,22 @@
+version: '3'
+
+### docker run --rm -ti  --name wildfly -h wf -p 8080:8080 -p 8443:8443 -p 9990:9990 thikade/wildfly:14.0.1.Final
+
+services:
+  wildfly14:
+    build: .
+    image: thikade/wildfly:14.0.1.Final
+    container_name: wildfly14
+    environment:
+      DUMMY: test
+    hostname: wildfly
+    expose:
+      - "8080"
+      - "8443"
+      - "9990"
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "9990:9990"
+    volumes:
+      - ./tmp:/tmp/xchange

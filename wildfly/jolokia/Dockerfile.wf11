@@ -14,11 +14,11 @@ EXPOSE 9990
 
 USER root
 
-# RUN yum -y update && yum -y install iproute net-tools less 
+# RUN yum -y update && yum -y install iproute net-tools less
 RUN yum -y install iproute net-tools less socat nc telnet
 
 
-USER jboss 
+USER jboss
 
 # DEPLOY APPS
 COPY apps/*.war    /opt/jboss/wildfly/standalone/deployments/

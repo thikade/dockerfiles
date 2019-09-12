@@ -1,4 +1,4 @@
-FROM jboss/wildfly:12.0.0.Final
+FROM jboss/wildfly:14.0.1.Final
 
 ARG WAR_LOCATION
 ENV WAR_LOCATION=${WAR_LOCATION}
@@ -23,7 +23,9 @@ USER jboss
 # DEPLOY APPS
 COPY apps/*.war    /opt/jboss/wildfly/standalone/deployments/
 
-COPY config/* /opt/jboss/wildfly/standalone/configuration/
+# COPY CONFIG
+COPY config/*.properties /opt/jboss/wildfly/standalone/configuration/
+COPY config/standalone.xml_wf-14 /opt/jboss/wildfly/standalone/configuration/standalone.xml
 
 RUN ls -ltr /opt/jboss/wildfly/standalone/deployments/  /opt/jboss/wildfly/standalone/configuration
 

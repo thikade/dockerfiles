@@ -80,7 +80,7 @@ for NN in $(seq  -f '%02.0f' 1 $NODE_COUNT); do
       echo "#4.${NN} Bootstrapping node${NN} ..."
       docker-compose -f docker-compose-build-was9.yml build node${NN}
     fi
-    echo "#4.${NN} Starting Node01 ..."
+    echo "#4.${NN} Starting Node${NN} ..."
     docker-compose -f docker-compose-build-was9.yml up -d node${NN}
     sleep 120
     echo "#4.${NN} Container node${NN} is started"

@@ -60,7 +60,7 @@ services:
       - was9
 
   dmgr:
-    image: wasnd9-cell-dmgr:9050
+    image: wasnd9-cell-dmgr:${WAS_INSTALLATION_VERSION}
     container_name: dmgr
     hostname: dmgr
     environment:
@@ -99,7 +99,7 @@ services:
       - was9
 
   node01:
-    image: wasnd9-cell-node01
+    image: wasnd9-cell-node01:${WAS_INSTALLATION_VERSION}
     container_name: node01
     depends_on:
       - dmgr
@@ -136,7 +136,7 @@ services:
       - was9
 
   node02:
-    image: wasnd9-cell-node02
+    image: wasnd9-cell-node02:${WAS_INSTALLATION_VERSION}
     container_name: node02
     hostname: node02
     depends_on:

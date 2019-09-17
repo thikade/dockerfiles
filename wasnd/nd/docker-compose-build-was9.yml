@@ -14,29 +14,16 @@ networks:
     driver: bridge
 
 services:
-  wasnd_install_step1:
-    image: was9_delete_me
+  wasnd_chained_build:
+    image: wasnd9-noprofile:${WAS_INSTALLATION_VERSION}
     hostname: was
     build:
       context: ./install
-      dockerfile: Dockerfile.v9.prereq
+      dockerfile: Dockerfile.v9.install_chainedBuilds
       args:
         WAS_VERSION: ${WAS_INSTALLATION_VERSION_IM}
         JDK_VERSION: ${JDK_INSTALLATION_VERSION_IM}
         REPOS: ${IM_REPOSITORIES}
-        user: wasadmin
-        group: wasadmin
-    networks:
-      - was9
-
-  wasnd_install_step2:
-    image: wasnd9-noprofile:${WAS_INSTALLATION_VERSION}
-    hostname: dmgr
-    build:
-      context: .
-      dockerfile: ./install/Dockerfile.v9.install
-      args:
-        WASVERSION: ${WAS_INSTALLATION_VERSION}
         user: wasadmin
         group: wasadmin
     networks:

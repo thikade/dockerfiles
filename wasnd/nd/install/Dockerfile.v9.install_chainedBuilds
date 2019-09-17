@@ -1,25 +1,22 @@
-###########################################################################
-# (C) Copyright IBM Corporation 2015, 2016.                               #
-#                                                                         #
-# Licensed under the Apache License, Version 2.0 (the "License");         #
-# you may not use this file except in compliance with the License.        #
-# You may obtain a copy of the License at                                 #
-#                                                                         #
-#      http://www.apache.org/licenses/LICENSE-2.0                         #
-#                                                                         #
-# Unless required by applicable law or agreed to in writing, software     #
-# distributed under the License is distributed on an "AS IS" BASIS,       #
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.#
-# See the License for the specific language governing permissions and     #
-# limitations under the License.                                          #
-###########################################################################
-FROM ubuntu:16.04
 
-
-# based on work from  Kavitha Suresh Kumar <kavisuresh@in.ibm.com>
+FROM ubuntu:16.04 AS WASBaseImage
 MAINTAINER thomas.hikade@gmail.com
 
-RUN apt-get update -qq && apt-get install -qq -y unzip wget
+ARG WAS_VERSION=unknown
+ARG JDK_VERSION=unknown
+
+LABEL WAS_VERSION=$WAS_VERSION
+LABEL JDK_VERSION=$JDK_VERSION
+
+RUN apt-get update -qq && \
+    apt-get install -qq -y unzip wget net-tools sudo less vim curl netcat inetutils-ping iproute2 && \
+    rm -rf /var/lib/apt/lists/*
+
+
+
+
+FROM WASBaseImage AS Exporter
+MAINTAINER thomas.hikade@gmail.com
 
 # SANE DEFAULTS
 ARG user=wasadmin
@@ -41,7 +38,7 @@ ARG JDK_VERSION=com.ibm.java.jdk.v8
 ###################### IBM Installation Manager ##########################
 
 # Install IBM Installation Manager
-RUN echo "IM_URL  : $IM_INSTALLER_URL" \
+RUN echo "IM_URL  : $IM_INSTALLER_URL" && \
     wget -q $IM_INSTALLER_URL -O /tmp/IM.zip \
     && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
     && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
@@ -65,4 +62,19 @@ RUN /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
       -installationDirectory /opt/IBM/WebSphere/AppServer \
       -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
 
-CMD ["tar","cf","/tmp/was9.tar","/opt/IBM/WebSphere/AppServer"]
+
+
+
+FROM WASBaseImage
+
+ARG user=wasadmin
+ARG group=wasadmin
+
+ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
+
+RUN groupadd $group && useradd $user -g $group -m && \
+    mkdir /work && chown -R $user:$group /work
+
+USER $user
+
+COPY --from=Exporter --chown=$user:$group /opt/IBM/WebSphere/AppServer/ /opt/IBM/WebSphere/AppServer/

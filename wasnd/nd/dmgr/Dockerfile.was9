@@ -14,7 +14,7 @@
 # limitations under the License.                                          #
 ###########################################################################
 
-FROM wasnd9-noprofile
+FROM wasnd9-noprofile:9050
 
 # based on https://github.com/WASdev/ci.docker.websphere-traditional/
 MAINTAINER thikade <thomas.hikade@gmail.com>
@@ -27,6 +27,13 @@ ARG CELL_NAME=DefaultCell01
 ### using the container's real hostname
 ENV NODE_NAME=ManagerNode
 ENV HOST_NAME=localhost
+ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
+
+# add JMX Exporter as Java Agent
+## ENV JVM_EXTRA_CMD_ARGS -javaagent:/work/jmx_prometheus_javaagent-0.12.0.jar=2345:/work/jmx-config.yml
+
+COPY startDmgr.sh update*.py jmx_prometheus_javaagent-0.12.0.jar jmx-config.yml /work/
+RUN ls -l /work
 
 # Create Deployment Manager profile
 RUN /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
@@ -36,10 +43,6 @@ RUN /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
     -enableAdminSecurity true -adminUserName wasadmin -adminPassword wasadmin
 
 EXPOSE 9060 9043 9809 8879 9632 9401 9403 9402 9100 7277 9352 5555 7060 11005 11006 9420
-
-ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
-
-COPY startDmgr.sh update*.py /work/
 
 RUN /opt/IBM/WebSphere/AppServer/bin/startManager.sh
 

@@ -1,11 +1,10 @@
-version: '2'
+version: "2"
 
 networks:
-   was9:
-     driver: bridge
+  was9:
+    driver: bridge
 
 services:
-
   ldap:
     # docker run --env LDAP_ORGANISATION="2i" --env LDAP_DOMAIN="2i.at" --env LDAP_ADMIN_PASSWORD="admin" --detach --name ldap  -v ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom  osixia/openldap:1.2.1 --copy-service --loglevel=info
 
@@ -61,18 +60,20 @@ services:
       - was9
 
   dmgr:
-    image: wasnd9-cell-dmgr
+    image: wasnd9-cell-dmgr:9050
     container_name: dmgr
     hostname: dmgr
     environment:
-      WASCONFIG_RUNAS_USER : wasadmin
-      WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
-      WASCONFIG_PROFILE_PATH : /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
-      WASCONFIG_PROFILE_NAME : Dmgr01
-      WASCONFIG_ADMIN_HOST : dmgr
-      WASCONFIG_ADMIN_PORT : 8879
-      WASCONFIG_ADMIN_USER : wasadmin
-      WASCONFIG_ADMIN_PASS : wasadmin
+      WASCONFIG_RUNAS_USER: wasadmin
+      WASCONFIG_WAS_ROOT: /opt/IBM/WebSphere/AppServer
+      WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
+      WASCONFIG_PROFILE_NAME: Dmgr01
+      WASCONFIG_ADMIN_HOST: dmgr
+      WASCONFIG_ADMIN_PORT: 8879
+      WASCONFIG_ADMIN_USER: wasadmin
+      WASCONFIG_ADMIN_PASS: wasadmin
+      # JVM_EXTRA_CMD_ARGS: "-javaagent:/work/jmx_prometheus_javaagent-0.12.0.jar=2345:/work/jmx-config.yml"
+      JVM_EXTRA_CMD_ARGS: "-javaagent:/work/jmx_prometheus_javaagent-0.12.1-SNAPSHOT.jar=2345:/work/jmx-config.yml"
     expose:
       - "9060"
       - "9043"
@@ -96,6 +97,8 @@ services:
     volumes:
       - $PRJ_ROOT/wasconfig:/wasconfig:rw
       - $PRJ_ROOT/was_configs:/config:rw
+      - $PRJ_ROOT/dockerfiles/wasnd/nd/dmgr/jmx-config.yml:/work/jmx-config.yml:rw
+      - $PRJ_ROOT/dockerfiles/wasnd/nd/dmgr/jmx_prometheus_javaagent-0.12.1-SNAPSHOT.jar:/work/jmx_prometheus_javaagent-0.12.1-SNAPSHOT.jar:ro
     networks:
       - was9
 

@@ -30,7 +30,7 @@ RUN groupadd $group && useradd $user -g $group -m\
 USER $user
 
 ARG URL=http://192.168.99.100:8080/WASND
-ARG REPOS=$URL/9000/BASE,$URL/JDK-80511
+ARG REPOS=$URL/9000/BASE,$URL/9050,$URL/JDK-80540
 
 ARG WAS_VERSION=com.ibm.websphere.ND.v90
 ARG JDK_VERSION=com.ibm.java.jdk.v8
@@ -56,4 +56,4 @@ RUN /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repos
       -installationDirectory /opt/IBM/WebSphere/AppServer \
       -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
 
-CMD ["tar","cvf","/tmp/was9.tar","/opt/IBM/WebSphere/AppServer"]
+CMD ["tar","cf","/tmp/was9.tar","/opt/IBM/WebSphere/AppServer"]

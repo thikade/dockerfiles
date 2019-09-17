@@ -1,12 +1,11 @@
-version: '2'
+version: "2"
 
 networks:
-   was9:
-#     # driver: bridge
-     external: true
+  was9:
+    #     # driver: bridge
+    driver: bridge
 
 services:
-
   wasnd_install_step1:
     image: was9_delete_me
     hostname: was
@@ -17,26 +16,26 @@ services:
         user: wasadmin
         group: wasadmin
         URL: http://192.168.99.100:8080/WASND
-        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9007,http://192.168.99.100:8080/WASND/JDK-80511
+        # REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9007,http://192.168.99.100:8080/WASND/JDK-80511
+        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9050,http://192.168.99.100:8080/WASND/JDK-80540
     networks:
       - was9
 
   wasnd_install_step2:
-    image: wasnd9-noprofile
+    image: wasnd9-noprofile:9050
     hostname: dmgr
     build:
       context: ./install
       dockerfile: Dockerfile.v9.install
       args:
-        WASVERSION: 9.0.0.7
+        WASVERSION: 9.0.5.0
         user: wasadmin
         group: wasadmin
     networks:
       - was9
 
-
   dmgr:
-    image: wasnd9-dmgr
+    image: wasnd9-dmgr:9050
     container_name: dmgr
     hostname: dmgr
     build:
@@ -74,7 +73,7 @@ services:
       - was9
 
   node01:
-    image: wasnd9-node01
+    image: wasnd9-node01:9050
     container_name: node01
     hostname: node01
     build:
@@ -108,10 +107,10 @@ services:
       - 9080
       - 9443
     networks:
-     - was9
+      - was9
 
   node02:
-    image: wasnd9-node02
+    image: wasnd9-node02:9050
     container_name: node02
     hostname: node02
     build:

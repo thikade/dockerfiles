@@ -26,14 +26,13 @@ LABEL WAS_VERSION=$WASVERSION
 ARG user=wasadmin
 ARG group=wasadmin
 
-RUN apt-get update && \
-    apt-get install -y unzip wget net-tools sudo less vim curl netcat inetutils-ping iproute2 && \
+RUN apt-get update -qq && \
+    apt-get install -qq -y unzip wget net-tools sudo less vim curl netcat inetutils-ping iproute2 && \
     rm -rf /var/lib/apt/lists/* && \
     groupadd $group && useradd $user -g $group -m \
     && mkdir /work && chown -R $user:$group /work
 
 USER $user
 
-ADD was.tar /
-
 ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
+ADD was9.tar /

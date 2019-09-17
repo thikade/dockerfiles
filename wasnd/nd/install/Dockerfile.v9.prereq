@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and     #
 # limitations under the License.                                          #
 ###########################################################################
-
 FROM ubuntu:16.04
+
 
 # based on work from  Kavitha Suresh Kumar <kavisuresh@in.ibm.com>
 MAINTAINER thomas.hikade@gmail.com
 
-RUN apt-get update && apt-get install -y unzip wget
+RUN apt-get update -qq && apt-get install -qq -y unzip wget
 
+# SANE DEFAULTS
 ARG user=wasadmin
 ARG group=wasadmin
 
@@ -29,17 +30,19 @@ RUN groupadd $group && useradd $user -g $group -m\
 
 USER $user
 
-ARG URL=http://192.168.99.100:8080/WASND
-ARG REPOS=$URL/9000/BASE,$URL/JDK-80511
+# SPECIFY THE WAS INSTALLER REPO URL
+ARG IM_INSTALLER_URL=http://192.168.99.100:8080/WASND/agent.installer.lnx.gtk.x86_64_1.8.5.zip
+ARG REPOS=http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9007,http://192.168.99.100:8080/WASND/JDK-80511
 
+# AUTOMATICALLY INSTALL THE LATEST VERSION FOUND
 ARG WAS_VERSION=com.ibm.websphere.ND.v90
 ARG JDK_VERSION=com.ibm.java.jdk.v8
 
 ###################### IBM Installation Manager ##########################
 
 # Install IBM Installation Manager
-RUN echo "URL is: $URL" && echo "REPOS is: $REPOS" && \
-    wget -q $URL/agent.installer.lnx.gtk.x86_64_1.8.5.zip -O /tmp/IM.zip \
+RUN echo "IM_URL  : $IM_INSTALLER_URL" \
+    wget -q $IM_INSTALLER_URL -O /tmp/IM.zip \
     && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
     && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
       -installationDirectory "/opt/IBM/InstallationManager"  \
@@ -47,13 +50,19 @@ RUN echo "URL is: $URL" && echo "REPOS is: $REPOS" && \
     && rm -fr /tmp/IM.zip /tmp/im
 
 ### IBM WebSphere Application Server & IBM Java SDK ######################
+RUN echo "======" && \
+    echo WAS_VERSION: $WAS_VERSION && \
+    echo JDK_VERSION: $JDK_VERSION && \
+    echo REPOS: $REPOS && \
+    echo "======" && \
+    /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  && \
+    echo "======"
 
 # Install IBM WebSphere Application Server v9 & IBM Java SDK 8
-RUN /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
-      && /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+RUN /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
       -acceptLicense install $WAS_VERSION $JDK_VERSION \
       -repositories $REPOS \
       -installationDirectory /opt/IBM/WebSphere/AppServer \
       -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
 
-CMD ["tar","cvf","/tmp/was9.tar","/opt/IBM/WebSphere/AppServer"]
+CMD ["tar","cf","/tmp/was9.tar","/opt/IBM/WebSphere/AppServer"]

@@ -72,11 +72,10 @@ ARG group=wasadmin
 
 ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
 
+
+COPY --from=Exporter /opt/IBM/WebSphere/AppServer/ /opt/IBM/WebSphere/AppServer/
+
 RUN groupadd $group && useradd $user -g $group -m && \
-    mkdir /work && chown -R $user:$group /work
-
-# RUN cat /etc/passwd
-
-COPY --from=Exporter --chown=1000:1000 /opt/IBM/WebSphere/AppServer/ /opt/IBM/WebSphere/AppServer/
+    mkdir /work && chown -R $user:$group /work /opt/IBM/WebSphere/AppServer/
 
 USER $user

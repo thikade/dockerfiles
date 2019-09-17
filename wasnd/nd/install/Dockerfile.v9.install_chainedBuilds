@@ -75,6 +75,8 @@ ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
 RUN groupadd $group && useradd $user -g $group -m && \
     mkdir /work && chown -R $user:$group /work
 
-USER $user
+# RUN cat /etc/passwd
 
-COPY --from=Exporter --chown=$user:$group /opt/IBM/WebSphere/AppServer/ /opt/IBM/WebSphere/AppServer/
+COPY --from=Exporter --chown=1000:1000 /opt/IBM/WebSphere/AppServer/ /opt/IBM/WebSphere/AppServer/
+
+USER $user

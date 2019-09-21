@@ -1,20 +1,5 @@
-###########################################################################
-# (C) Copyright IBM Corporation 2015.                                     #
-#                                                                         #
-# Licensed under the Apache License, Version 2.0 (the "License");         #
-# you may not use this file except in compliance with the License.        #
-# You may obtain a copy of the License at                                 #
-#                                                                         #
-#      http://www.apache.org/licenses/LICENSE-2.0                         #
-#                                                                         #
-# Unless required by applicable law or agreed to in writing, software     #
-# distributed under the License is distributed on an "AS IS" BASIS,       #
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.#
-# See the License for the specific language governing permissions and     #
-# limitations under the License.                                          #
-###########################################################################
-
-FROM wasnd9-noprofile
+ARG WAS_INSTALLATION_VERSION
+FROM wasnd9-noprofile:${WAS_INSTALLATION_VERSION}
 
 # based on https://github.com/WASdev/ci.docker.websphere-traditional/
 MAINTAINER thikade <thomas.hikade@gmail.com>
@@ -27,20 +12,34 @@ ARG CELL_NAME=DefaultCell01
 ### using the container's real hostname
 ENV NODE_NAME=ManagerNode
 ENV HOST_NAME=localhost
+ENV PROFILE_NAME=$PROFILE_NAME
+ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
+
+EXPOSE 9060 9043 9809 8879 9632 9401 9403 9402 9100 7277 9352 5555 7060 11005 11006 9420
+
+COPY startDmgr.sh update*.py /work/
+RUN ls -l /work
+
+RUN echo "$NODE_NAME" > /tmp/nodename && \
+    echo "$HOST_NAME" > /tmp/hostname
 
 # Create Deployment Manager profile
-RUN /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
+RUN echo "NODE_NAME=$NODE_NAME" && \
+    echo "CELL_NAME=$CELL_NAME" && \
+    echo "HOST_NAME=$HOST_NAME" && \
+    echo "PROFILE_NAME=$PROFILE_NAME" && \
+    /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
     /opt/IBM/WebSphere/AppServer/profileTemplates/management -profileName $PROFILE_NAME \
     -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME  -serverType DEPLOYMENT_MANAGER \
     -cellName $CELL_NAME -nodeName $NODE_NAME -disableWASDesktopIntegration -hostName $HOST_NAME \
     -enableAdminSecurity true -adminUserName wasadmin -adminPassword wasadmin
 
-EXPOSE 9060 9043 9809 8879 9632 9401 9403 9402 9100 7277 9352 5555 7060 11005 11006 9420
-
-ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
-
-COPY startDmgr.sh update*.py /work/
 
 RUN /opt/IBM/WebSphere/AppServer/bin/startManager.sh
 
+USER root
+RUN ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME             /PROF  && \
+    ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs/dmgr   /LOGS
+
+USER $user
 CMD ["bash", "/work/startDmgr.sh"]

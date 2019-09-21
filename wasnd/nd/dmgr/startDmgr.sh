@@ -13,19 +13,25 @@ update_host_node_name()
     host=`hostname`
 
     #Check whether node name is provided or use default
-    if [ "$NODE_NAME" = "" ]
+    if [ "$NODE_NAME" != "$ACTIVE_NODENAME" ]
     then
-       NODE_NAME="ManagerNode"
-    else
        # Update the nodename
+       echo "======================================================================="
+       echo "running rename node from node: $ACTIVE_NODENAME to: $NODE_NAME "
+       echo "======================================================================="
        /opt/IBM/WebSphere/AppServer/bin/wsadmin.sh -lang jython -conntype NONE -f /work/updateNodeName.py \
-       ManagerNode $NODE_NAME
+       $ACTIVE_NODENAME $NODE_NAME
 
        echo "WAS_NODE=$NODE_NAME" >> /opt/IBM/WebSphere/AppServer/bin/setupCmdLine.sh
+       echo "$NODE_NAME" > /tmp/nodename
 
     fi
 
     # Update the hostname
+    echo ""
+    echo "======================================================================="
+    echo "*  update the HOST NAME to: $host"
+    echo "======================================================================="
     /opt/IBM/WebSphere/AppServer/bin/wsadmin.sh -lang jython -conntype NONE -f /work/updateHostName.py \
     $NODE_NAME $host
 
@@ -69,6 +75,24 @@ stopDmgr()
         echo " Dmgr stopped successfully. "
     fi
 }
+
+#Get the container hostname
+host=`hostname`
+
+# get configured nodeName
+test -f /tmp/nodename && ACTIVE_NODENAME=$(cat /tmp/nodename)
+ACTIVE_NODENAME=${ACTIVE_NODENAME:-CustomNode}
+
+cat << EOM
+### current ENV settings ###
+
+hostName    = $host
+nodeName    = $NODE_NAME
+profileName = $PROFILE_NAME
+
+currently active nodename = $ACTIVE_NODENAME
+
+EOM
 
 if [ ! -f "/work/host_nodenameupdated" ]
 then

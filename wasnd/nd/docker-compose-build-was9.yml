@@ -1,49 +1,45 @@
-version: '2'
+version: "2"
+
+### you MUST define the following ENV variables either in the calling shell, or
+### put it into a .env file next to the docker-compose file!
+### Examples:
+#     WAS_INSTALLATION_VERSION=9.0.0.7
+#     WAS_INSTALLATION_VERSION_IM=com.ibm.websphere.ND.v90
+#     WAS_INSTALLATION_VERSION_IM=om.ibm.websphere.ND.v90_9.0.7.20180302_0440
+#     JDK_INSTALLATION_VERSION_IM=com.ibm.java.jdk.v8
 
 networks:
-   was9:
-#     # driver: bridge
-     external: true
+  was9:
+    #     # driver: bridge
+    driver: bridge
 
 services:
-
-  wasnd_install_step1:
-    image: was9_delete_me
+  wasnd_chained_build:
+    image: wasnd9-noprofile:${WAS_INSTALLATION_VERSION}
     hostname: was
     build:
       context: ./install
-      dockerfile: Dockerfile.v9.prereq
+      dockerfile: Dockerfile.v9.install_chainedBuilds
       args:
-        user: wasadmin
-        group: wasadmin
-        URL: http://192.168.99.100:8080/WASND
-        REPOS: http://192.168.99.100:8080/WASND/9000/BASE,http://192.168.99.100:8080/WASND/9007,http://192.168.99.100:8080/WASND/JDK-80511
-    networks:
-      - was9
-
-  wasnd_install_step2:
-    image: wasnd9-noprofile
-    hostname: dmgr
-    build:
-      context: ./install
-      dockerfile: Dockerfile.v9.install
-      args:
-        WASVERSION: 9.0.0.7
+        WAS_VERSION: ${WAS_INSTALLATION_VERSION_IM}
+        JDK_VERSION: ${JDK_INSTALLATION_VERSION_IM}
+        REPOS: ${IM_REPOSITORIES}
+        IM_INSTALLER_URL: ${IM_INSTALLER_URL}
         user: wasadmin
         group: wasadmin
     networks:
       - was9
-
 
   dmgr:
-    image: wasnd9-dmgr
+    image: wasnd9-dmgr:${WAS_INSTALLATION_VERSION}
     container_name: dmgr
     hostname: dmgr
     build:
       context: ./dmgr
       dockerfile: Dockerfile.was9
       args:
-        PROFILE_NAME: Dmgr01
+        WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
+        PROFILE_NAME: dmgr
         CELL_NAME: DefaultCell
         NODE_NAME: ManagerNode
     # environment:
@@ -74,18 +70,21 @@ services:
       - was9
 
   node01:
-    image: wasnd9-node01
+    image: wasnd9-node01:${WAS_INSTALLATION_VERSION}
     container_name: node01
     hostname: node01
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
       args:
+        WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom
+        NODE_NAME: CustomNode01
     environment:
-      NODE_NAME: Node01
+      NODE_NAME: CustomNode01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
+      # WAIT: 300
     expose:
       - 2809
       - 9402
@@ -108,21 +107,24 @@ services:
       - 9080
       - 9443
     networks:
-     - was9
+      - was9
 
   node02:
-    image: wasnd9-node02
+    image: wasnd9-node02:${WAS_INSTALLATION_VERSION}
     container_name: node02
     hostname: node02
     build:
       context: ./custom
       dockerfile: Dockerfile.was9
       args:
+        WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom
+        NODE_NAME: CustomNode02
     environment:
-      NODE_NAME: Node02
+      NODE_NAME: CustomNode02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
+      # WAIT: 600
     expose:
       - 2809
       - 9402

@@ -1,43 +1,41 @@
-###########################################################################
-# (C) Copyright IBM Corporation 2015.                                     #
-#                                                                         #
-# Licensed under the Apache License, Version 2.0 (the "License");         #
-# you may not use this file except in compliance with the License.        #
-# You may obtain a copy of the License at                                 #
-#                                                                         #
-#      http://www.apache.org/licenses/LICENSE-2.0                         #
-#                                                                         #
-# Unless required by applicable law or agreed to in writing, software     #
-# distributed under the License is distributed on an "AS IS" BASIS,       #
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.#
-# See the License for the specific language governing permissions and     #
-# limitations under the License.                                          #
-###########################################################################
-
-FROM wasnd9-noprofile
+ARG WAS_INSTALLATION_VERSION
+FROM wasnd9-noprofile:${WAS_INSTALLATION_VERSION}
 
 # based on https://github.com/WASdev/ci.docker.websphere-traditional/
 MAINTAINER thikade <thomas.hikade@gmail.com>
 
 ARG PROFILE_NAME=Custom
 ARG CELL_NAME=CustomCell
+ARG NODE_NAME=CustomNodeXX
 
 ### DO NOT change hostname or node name!
 ### They will be re-set from container startup script
-ENV NODE_NAME=CustomNode
+ENV NODE_NAME=$NODE_NAME
 ENV HOST_NAME=localhost
+ENV PROFILE_NAME=$PROFILE_NAME
+ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
+
+EXPOSE 2809 9402 9403 9353 9633 9100 11004 11003 9401 7276 7286 5558 5578 5060 5061 8880 9060 9043 9080 9443
+
+COPY *.sh *.py /work/
+
+RUN echo "$NODE_NAME" > /tmp/nodename && \
+    echo "$HOST_NAME" > /tmp/hostname
 
 # Create default Custom Node profile
-RUN /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
+RUN echo "\nNODE_NAME=$NODE_NAME" && \
+    echo "CELL_NAME=$CELL_NAME" && \
+    echo "HOST_NAME=$HOST_NAME" && \
+    echo "PROFILE_NAME=$PROFILE_NAME\n" && \
+    /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
     /opt/IBM/WebSphere/AppServer/profileTemplates/managed -profileName $PROFILE_NAME \
     -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME -cellName $CELL_NAME \
     -nodeName $NODE_NAME -disableWASDesktopIntegration -FederateLater true -hostName $HOST_NAME
 
-#Expose the ports
-EXPOSE 2809 9402 9403 9353 9633 9100 11004 11003 9401 7276 7286 5558 5578 5060 5061 8880 9060 9043 9080 9443
+USER root
+RUN ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME           /PROF  && \
+    ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs      /LOGS
 
-ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
-
-COPY *.sh *.py /work/
+USER $user
 
 CMD ["/work/updateHostAndAddNode.sh"]

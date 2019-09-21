@@ -1,7 +1,7 @@
 version: "2"
 
 networks:
-  was9:
+  was9base:
     driver: bridge
 
 services:
@@ -30,38 +30,40 @@ services:
     # entrypoint: "sh -c 'while true; do sleep 60; echo hello; done'"
     command: --copy-service --loglevel=debug
     networks:
-      - was9
+      - was9base
 
-  ldap2:
-    image: osixia/openldap:1.2.1
-    container_name: ldap2
-    hostname: ldap2
-    environment:
-      LDAP_ORGANISATION: 2i
-      LDAP_DOMAIN: 2i.at
-      LDAP_ADMIN_PASSWORD: admin
-    expose:
-      - "389"
-      - "636"
-    ports:
-      - "20389:389"
-      - "20636:636"
-    volumes:
-      - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
-    command: --copy-service --loglevel=info
-    networks:
-      - was9
+  # ldap2:
+  #   image: osixia/openldap:1.2.1
+  #   container_name: ldap2
+  #   hostname: ldap2
+  #   environment:
+  #     LDAP_ORGANISATION: 2i
+  #     LDAP_DOMAIN: 2i.at
+  #     LDAP_ADMIN_PASSWORD: admin
+  #   expose:
+  #     - "389"
+  #     - "636"
+  #   ports:
+  #     - "20389:389"
+  #     - "20636:636"
+  #   volumes:
+  #     - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+  #   command: --copy-service --loglevel=info
+  #   networks:
+  #     - was9
 
-  dmgr:
-    image: wasnd9-cell-dmgr:${WAS_INSTALLATION_VERSION}
-    container_name: dmgr
-    hostname: dmgr
+  was9base:
+    image: ibmcom/websphere-traditional:9.0.0.11
+    container_name: was9base
+    hostname: was9base
     environment:
+      ADMIN_USER_NAME: wasadmin
+      ENABLE_BASIC_LOGGING: "true"
       WASCONFIG_RUNAS_USER: wasadmin
       WASCONFIG_WAS_ROOT: /opt/IBM/WebSphere/AppServer
-      WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/dmgr
-      WASCONFIG_PROFILE_NAME: dmgr
-      WASCONFIG_ADMIN_HOST: dmgr
+      WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
+      WASCONFIG_PROFILE_NAME: AppSrv01
+      WASCONFIG_ADMIN_HOST: localhost
       WASCONFIG_ADMIN_PORT: 8879
       WASCONFIG_ADMIN_USER: wasadmin
       WASCONFIG_ADMIN_PASS: wasadmin
@@ -86,78 +88,8 @@ services:
       - "9060:9060"
       - "9043:9043"
     volumes:
+      - $PWD/was_base_admin_password:/tmp/PASSWORD
       - $PRJ_ROOT/wasconfig:/wasconfig:rw
       - $PRJ_ROOT/was_configs:/config:rw
     networks:
-      - was9
-
-  node01:
-    image: wasnd9-cell-node01:${WAS_INSTALLATION_VERSION}
-    container_name: node01
-    depends_on:
-      - dmgr
-    environment:
-      NODE_NAME: CustomNode01
-      DMGR_HOST: dmgr
-      DMGR_PORT: "8879"
-    hostname: node01
-    expose:
-      - 2809
-      - 9402
-      - 9403
-      - 9353
-      - 9633
-      - 9100
-      - 11004
-      - 11003
-      - 9401
-      - 7276
-      - 7286
-      - 5558
-      - 5578
-      - 5060
-      - 5061
-      - 8880
-      - 9060
-      - 9043
-      - 9080
-      - 9443
-    ports:
-      - "9080:9080"
-      - "9443:9443"
-    networks:
-      - was9
-
-  node02:
-    image: wasnd9-cell-node02:${WAS_INSTALLATION_VERSION}
-    container_name: node02
-    hostname: node02
-    depends_on:
-      - dmgr
-    environment:
-      NODE_NAME: CustomNode02
-      DMGR_HOST: dmgr
-      DMGR_PORT: "8879"
-    expose:
-      - 2809
-      - 9402
-      - 9403
-      - 9353
-      - 9633
-      - 9100
-      - 11004
-      - 11003
-      - 9401
-      - 7276
-      - 7286
-      - 5558
-      - 5578
-      - 5060
-      - 5061
-      - 8880
-      - 9060
-      - 9043
-      - 9080
-      - 9443
-    networks:
-      - was9
+      - was9base

@@ -53,20 +53,27 @@ services:
   #     - was9
 
   was9base:
-    image: ibmcom/websphere-traditional:9.0.0.11
+    # image: ibmcom/websphere-traditional:9.0.0.11
+    image: websphere-traditional:9.0.0.11
     container_name: was9base
     hostname: was9base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ADMIN_PASSWORD: wasadmin
     environment:
-      ADMIN_USER_NAME: wasadmin
+      ADMIN_USER_NAME: wsadmin
+      ADMIN_PASSWORD: wsadmin
       ENABLE_BASIC_LOGGING: "true"
-      WASCONFIG_RUNAS_USER: wasadmin
+      WASCONFIG_RUNAS_USER: was
       WASCONFIG_WAS_ROOT: /opt/IBM/WebSphere/AppServer
       WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
       WASCONFIG_PROFILE_NAME: AppSrv01
       WASCONFIG_ADMIN_HOST: localhost
       WASCONFIG_ADMIN_PORT: 8879
-      WASCONFIG_ADMIN_USER: wasadmin
-      WASCONFIG_ADMIN_PASS: wasadmin
+      WASCONFIG_ADMIN_USER: wsadmin
+      WASCONFIG_ADMIN_PASS: wsadmin
     expose:
       - "9060"
       - "9043"
@@ -88,7 +95,6 @@ services:
       - "9060:9060"
       - "9043:9043"
     volumes:
-      - $PWD/was_base_admin_password:/tmp/PASSWORD
       - $PRJ_ROOT/wasconfig:/wasconfig:rw
       - $PRJ_ROOT/was_configs:/config:rw
     networks:

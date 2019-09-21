@@ -24,6 +24,7 @@ services:
         WAS_VERSION: ${WAS_INSTALLATION_VERSION_IM}
         JDK_VERSION: ${JDK_INSTALLATION_VERSION_IM}
         REPOS: ${IM_REPOSITORIES}
+        IM_INSTALLER_URL: ${IM_INSTALLER_URL}
         user: wasadmin
         group: wasadmin
     networks:
@@ -38,7 +39,7 @@ services:
       dockerfile: Dockerfile.was9
       args:
         WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
-        PROFILE_NAME: Dmgr01
+        PROFILE_NAME: dmgr
         CELL_NAME: DefaultCell
         NODE_NAME: ManagerNode
     # environment:
@@ -78,10 +79,12 @@ services:
       args:
         WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom
+        NODE_NAME: CustomNode01
     environment:
-      NODE_NAME: Node01
+      NODE_NAME: CustomNode01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
+      # WAIT: 300
     expose:
       - 2809
       - 9402
@@ -116,10 +119,12 @@ services:
       args:
         WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom
+        NODE_NAME: CustomNode02
     environment:
-      NODE_NAME: Node02
+      NODE_NAME: CustomNode02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
+      # WAIT: 600
     expose:
       - 2809
       - 9402

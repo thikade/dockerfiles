@@ -60,7 +60,9 @@ RUN /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
       -acceptLicense install $WAS_VERSION $JDK_VERSION \
       -repositories $REPOS \
       -installationDirectory /opt/IBM/WebSphere/AppServer \
-      -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false
+      -preferences \
+com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,\
+com.ibm.cic.common.core.preferences.keepFetchedFiles=false
 
 
 

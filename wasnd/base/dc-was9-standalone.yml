@@ -32,25 +32,25 @@ services:
     networks:
       - was9base
 
-  # ldap2:
-  #   image: osixia/openldap:1.2.1
-  #   container_name: ldap2
-  #   hostname: ldap2
-  #   environment:
-  #     LDAP_ORGANISATION: 2i
-  #     LDAP_DOMAIN: 2i.at
-  #     LDAP_ADMIN_PASSWORD: admin
-  #   expose:
-  #     - "389"
-  #     - "636"
-  #   ports:
-  #     - "20389:389"
-  #     - "20636:636"
-  #   volumes:
-  #     - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
-  #   command: --copy-service --loglevel=info
-  #   networks:
-  #     - was9
+  ldap2:
+    image: osixia/openldap:1.2.1
+    container_name: ldap2
+    hostname: ldap2
+    environment:
+      LDAP_ORGANISATION: 2i
+      LDAP_DOMAIN: 2i.at
+      LDAP_ADMIN_PASSWORD: admin
+    expose:
+      - "389"
+      - "636"
+    ports:
+      - "20389:389"
+      - "20636:636"
+    volumes:
+      - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    command: --copy-service --loglevel=info
+    networks:
+      - was9base
 
   was9base:
     # image: ibmcom/websphere-traditional:9.0.0.11
@@ -71,7 +71,7 @@ services:
       WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
       WASCONFIG_PROFILE_NAME: AppSrv01
       WASCONFIG_ADMIN_HOST: localhost
-      WASCONFIG_ADMIN_PORT: 8879
+      WASCONFIG_ADMIN_PORT: 8880
       WASCONFIG_ADMIN_USER: wsadmin
       WASCONFIG_ADMIN_PASS: wsadmin
     expose:

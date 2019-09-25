@@ -36,7 +36,7 @@ services:
     hostname: dmgr
     build:
       context: ./dmgr
-      dockerfile: Dockerfile.was9
+      dockerfile: Dockerfile
       args:
         WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: dmgr
@@ -75,7 +75,7 @@ services:
     hostname: node01
     build:
       context: ./custom
-      dockerfile: Dockerfile.was9
+      dockerfile: Dockerfile
       args:
         WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom
@@ -115,7 +115,7 @@ services:
     hostname: node02
     build:
       context: ./custom
-      dockerfile: Dockerfile.was9
+      dockerfile: Dockerfile
       args:
         WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom

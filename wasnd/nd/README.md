@@ -26,7 +26,7 @@ An IBM WebSphere Application Server Network Deployment traditional image can be 
 
 The shell script `runme_was9_complete` will perform the following actions:
 - expect a caddy running container serving install, with WAS binaries server under URL specified in .env
-- Check for existing image: wasnd9-noprofile:${IMAGE_VERSION}
+- Check for existing image: wasnd-noprofile:${IMAGE_VERSION}
   - if no image is found, it will build it by running docker-compose:
     `docker-compose -f docker-compose-build-was9.yml build wasnd_chained_build`
     The resulting image contains the WAS ND installation inside `/opt/IBM/WebSphere/ApplicationServer`

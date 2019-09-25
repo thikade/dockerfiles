@@ -1,0 +1,90 @@
+
+FROM ubuntu:16.04 AS WASBaseImage
+MAINTAINER thomas.hikade@gmail.com
+
+ARG WAS_VERSION=unknown
+ARG JDK_VERSION=unknown
+
+LABEL WAS_VERSION=$WAS_VERSION
+LABEL JDK_VERSION=$JDK_VERSION
+
+RUN apt-get update -qq && \
+    apt-get install -qq -y unzip wget net-tools sudo less vim curl netcat inetutils-ping iproute2 && \
+    rm -rf /var/lib/apt/lists/*
+
+
+
+
+FROM WASBaseImage AS Exporter
+MAINTAINER thomas.hikade@gmail.com
+
+# SANE DEFAULTS
+ARG user=wasadmin
+ARG group=wasadmin
+
+RUN groupadd $group && useradd $user -g $group -m\
+    && chown -R $user:$group /var /opt /tmp
+
+USER $user
+
+# SPECIFY THE WAS INSTALLER REPO URL
+ARG IM_INSTALLER_URL=http://192.168.99.100:8080/WASND/agent.installer.lnx.gtk.x86_64_1.8.5.zip
+ARG BASE_REPO=please_define_your_base_repo_in_the_.env_file
+ARG FIX_REPOS=please_define_your_repos_in_the_.env_file
+
+# AUTOMATICALLY INSTALL THE LATEST VERSION FOUND
+ARG WAS_VERSION=com.ibm.websphere.ND.v85
+ARG JDK_VERSION=com.ibm.websphere.IBMJAVA.v80
+
+###################### IBM Installation Manager ##########################
+
+# Install IBM Installation Manager
+RUN echo "IM_URL  : $IM_INSTALLER_URL" && \
+    wget -q $IM_INSTALLER_URL -O /tmp/IM.zip \
+    && mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
+    && /tmp/im/installc -acceptLicense -accessRights nonAdmin \
+      -installationDirectory "/opt/IBM/InstallationManager"  \
+      -dataLocation "/var/ibm/InstallationManager" -showProgress \
+    && rm -fr /tmp/IM.zip /tmp/im
+
+# WAS 8550 Binaries cannot installed from URL! Download to /tmp first
+RUN echo "download WAS 8550 from ${BASE_REPO}/" && \
+    mkdir /tmp/was && cd /tmp/was && \
+    wget -r -q --no-host-directories --no-parent ${BASE_REPO}/ || true
+
+### IBM WebSphere Application Server & IBM Java SDK ######################
+RUN echo "======" && \
+    echo WAS_VERSION: $WAS_VERSION && \
+    echo JDK_VERSION: $JDK_VERSION && \
+    echo REPOS: /tmp/was/8550/BASE,$FIX_REPOS && \
+    echo "======" && \
+    /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $FIX_REPOS  && \
+    echo "======"
+
+# Install IBM WebSphere Application Server v9 & IBM Java SDK 8
+RUN /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+      -acceptLicense install $WAS_VERSION $JDK_VERSION \
+      -repositories /tmp/was/8550/BASE,$FIX_REPOS \
+      -installationDirectory /opt/IBM/WebSphere/AppServer \
+      -properties user.wasjava=java8 \
+      -preferences \
+com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,\
+com.ibm.cic.common.core.preferences.keepFetchedFiles=false
+
+
+
+
+FROM WASBaseImage
+
+ARG user=wasadmin
+ARG group=wasadmin
+
+ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
+
+
+COPY --from=Exporter /opt/IBM/WebSphere/AppServer/ /opt/IBM/WebSphere/AppServer/
+
+RUN groupadd $group && useradd $user -g $group -m && \
+    mkdir /work && chown -R $user:$group /work /opt/IBM/WebSphere/AppServer/
+
+USER $user

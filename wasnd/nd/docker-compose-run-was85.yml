@@ -1,12 +1,10 @@
-version: '2'
+version: "2"
 
 networks:
-   was8:
-     # driver: bridge
-     external: true
+  was8:
+    driver: bridge
 
 services:
-
   ldap:
     # docker run --env LDAP_ORGANISATION="2i" --env LDAP_DOMAIN="2i.at" --env LDAP_ADMIN_PASSWORD="admin" --detach --name ldap  -v ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom  osixia/openldap:1.2.1 --copy-service --loglevel=info
 
@@ -62,18 +60,18 @@ services:
       - was8
 
   dmgr:
-    image: wasnd85-cell-dmgr
+    image: wasnd-cell-dmgr:${WAS_INSTALLATION_VERSION}
     container_name: dmgr
     hostname: dmgr
     environment:
-      WASCONFIG_RUNAS_USER : wasadmin
-      WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
-      WASCONFIG_PROFILE_PATH : /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
-      WASCONFIG_PROFILE_NAME : Dmgr01
-      WASCONFIG_ADMIN_HOST : dmgr
-      WASCONFIG_ADMIN_PORT : 8879
-      WASCONFIG_ADMIN_USER : wasadmin
-      WASCONFIG_ADMIN_PASS : wasadmin
+      WASCONFIG_RUNAS_USER: wasadmin
+      WASCONFIG_WAS_ROOT: /opt/IBM/WebSphere/AppServer
+      WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/dmgr
+      WASCONFIG_PROFILE_NAME: dmgr
+      WASCONFIG_ADMIN_HOST: dmgr
+      WASCONFIG_ADMIN_PORT: 8879
+      WASCONFIG_ADMIN_USER: wasadmin
+      WASCONFIG_ADMIN_PASS: wasadmin
       MyKeystorePwd: WebAS
     expose:
       - "9060"
@@ -102,12 +100,12 @@ services:
       - was8
 
   node01:
-    image: wasnd85-cell-node01
+    image: wasnd-cell-node01:${WAS_INSTALLATION_VERSION}
     container_name: node01
     depends_on:
       - dmgr
     environment:
-      NODE_NAME: Node01
+      NODE_NAME: CustomNode01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     hostname: node01
@@ -139,13 +137,13 @@ services:
       - was8
 
   node02:
-    image: wasnd85-cell-node02
+    image: wasnd-cell-node02:${WAS_INSTALLATION_VERSION}
     container_name: node02
     hostname: node02
     depends_on:
       - dmgr
     environment:
-      NODE_NAME: Node02
+      NODE_NAME: CustomNode02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:

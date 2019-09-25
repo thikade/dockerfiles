@@ -1,130 +1,124 @@
 #!/bin/bash
 
-WEB_URL=${1:-http://192.168.99.100:8080}
+# Usage:
+# optionally specify a WAS_INSTALLATION_VERSION number as argument
+# eg. 8.5.5.0 or 8.5.5.13
+# default is 8.5.5.13
+# edit .env.v85 to support/add new WAS versions!
 
-docker images | grep wasnd85-noprofile
+function help {
+  cat << EOM
+
+    Build complete WAS cell (dmgr + 2 nodes) docker images
+    with WAS version specified in ".env" file.
+
+    Optionally specify a WAS_INSTALLATION_VERSION number as argument.
+    E.g:
+       $0 8.5.5.13
+
+    # default version is 9.0.5.0
+
+EOM
+}
+
+# print help
+test "$1" = "-h" -o "$1" = "--help" && help && exit 0
+
+# get calling path
+EXEC_DIR=$(dirname $0)
+
+ENVIRONMENT=$EXEC_DIR/.env.v85
+# source Environment & WAS_INSTALLATION_VERSION
+. $ENVIRONMENT $1
+
+echo ""
+echo "==========================================================================="
+echo "you are going to build WAS image version: ${WAS_INSTALLATION_VERSION}"
+echo ""
+echo "Detailed WAS version string: ${WAS_INSTALLATION_VERSION_IM}"
+echo "Detailed JDK version string: ${JDK_INSTALLATION_VERSION_IM}"
+echo ""
+echo "8.5.5.0 Download URL: $DOWNLOAD_URL_8550"
+echo "REPOSITORIES: ${IM_REPOSITORIES}"
+echo "==========================================================================="
+echo ""
+sleep 4
+
+# Fileserver configuration
+FILESERVER_NAME=nginx
+FILESERVER_HTTP_PORT=8080
+# WAS binaries are located here: /INSTALL/WASND/8.5.5.0, /INSTALL/WASND/8.5.5.13, ...
+FILESERVER_DIR=/INSTALL/WASND
+FILESERVER_CONTAINER_NAME=fileserver
+
+BASE_IMAGE=wasnd-noprofile:${WAS_INSTALLATION_VERSION}
+
+echo "#1   checking for base image: \"${BASE_IMAGE}\""
+
+docker images --format ' {{.Repository }}:{{.Tag}}' | grep ${BASE_IMAGE}  > /dev/null
 if [ $? -ne 0 ] ; then
+    echo "#1.1 re-building base image ..."
+    sleep 3
 
-    if [ ! -f "install/was.tar" ]; then
-      if docker ps | grep caddy ; then
-          echo "caddy is running"
-      else
-          echo "starting caddy"
-          docker run -d  --name caddy -p 8080:8080 -v /INSTALL:/data caddy
-      fi
-
-      curl -sSo /dev/null  $WEB_URL/WASND
-      if [ $? -eq 0 ] ; then
-        echo "caddy is working"
-      else
-        echo "caddy not working. Aborting"!
-        exit 100
-      fi
-
-      echo -e "\ninstalling WASND v85 - Step 1\n"
-      docker-compose -f docker-compose-build-was85.yml build wasnd_install_step1
-      docker images  | grep "was85_delete_me"
-      if [ $? -ne 0 ]; then
-         echo "ERROR: WAS intermediary install container not found!"
-         echo "==========="
-         docker images
-         echo "==========="
-         exit 101
-      fi
-
-      echo -e "\n\n*** creating was.tar (installing WASND v85 - Step 2)\n"
-      docker run -ti --rm -v $(pwd):/tmp was85_delete_me
-      if [ $? -ne 0 ]; then
-         echo "Error: failed in step2"
-         exit 102
-      fi
-
-      if [ -f "was.tar" ] ; then
-        echo -e "*** WAS Install image 'was.tar' created successfully"
-        docker rmi was85_delete_me
-        mv was.tar install/
-      else
-        exit 103
-      fi
-
-    fi
-
-    echo -e "\n\n*** creating the final WAS v85 Docker base image ...\n"
-    docker-compose -f docker-compose-build-was85.yml build wasnd_install_step2
-    docker images | grep wasnd85-noprofile
-    if [ $? -eq 0 ] ; then
-      echo "WASv85 base image created successfully!"
-      echo "removing install/was.tar"
-      rm install/was.tar
+    # start a simple nginx fileserver based on nginx:stable-alpine image
+    #  serving directory $FILESERVER_DIR
+    if docker ps | grep $FILESERVER_CONTAINER_NAME  > /dev/null ; then
+        echo "#1.2 $FILESERVER_NAME is running"
     else
-      exit 104
+        echo "#1.2 starting fileserver container: $FILESERVER_NAME"
+        # docker run -d  --name caddy -p 8080:8080 -v /INSTALL:/data caddy
+        docker run --name $FILESERVER_CONTAINER_NAME --rm -v $FILESERVER_DIR:/usr/share/nginx/html:ro -d -p$FILESERVER_HTTP_PORT:80 nginx:stable-alpine \
+              /bin/sh -c "sed -i 's/location \/ {/location \/ {\nautoindex on;/' /etc/nginx/conf.d/default.conf  && echo 'starting nginx ....' && exec nginx -g 'daemon off;'"
+        sleep 4
     fi
+
+    curl -sSo /dev/null  $WEB_URL
+    if [ $? -eq 0 ] ; then
+      echo "#1.3 $FILESERVER_NAME tested ok"
+    else
+      echo "#1.3 $FILESERVER_NAME reported 40x. Aborting"!
+      exit 100
+    fi
+
+    echo "#1.4 installing WASND"
+    CMD="docker-compose -f $EXEC_DIR/docker-compose-build-was85.yml build wasnd_chained_build"
+    echo $CMD
+    $CMD
+    docker images --format ' {{.Repository }}:{{.Tag}}'  | grep "$BASE_IMAGE" > /dev/null
+    if [ $? -ne 0 ]; then
+       echo "#1.4 ERROR: base image $BASE_IMAGE not found!"
+       exit 101
+    fi
+    cat << EOM
+
+============================================================
+#1.5 base image is now complete: $BASE_IMAGE
+============================================================
+
+EOM
+
+else
+  cat << EOM
+
+============================================================
+#1 base image exists: ${BASE_IMAGE}  -  skipping rebuild.
+   Delete base image if you want to rebuild!
+============================================================
+
+EOM
 fi
 
-# wait for node rename operation upon first startup of nodes
-sleeptime=10
-maxwait=300
+cat << EOM
 
 
+============================================================
+  #2 creating a working cell (dmgr + 2 nodes) ...
 
-docker images | grep wasnd85-dmgr || docker-compose -f docker-compose-build-was85.yml build dmgr
-docker-compose -f docker-compose-build-was85.yml up -d dmgr
+     (running "$EXEC_DIR/build_was_cell.sh  $ENVIRONMENT  $EXEC_DIR/docker-compose-build-was85.yml  ${WAS_INSTALLATION_VERSION}")
+============================================================
 
-i=0
-while (( ($i * $sleeptime) < $maxwait )); do
-    sleep $sleeptime
-    let i=i+1
-    docker-compose -f docker-compose-build-was85.yml logs dmgr | grep 'DMGR SETUP COMPLETE'
-    rc=$?
-    test $rc -eq 0 && break
-done
-if [ $rc -gt 0 ]; then
-  echo "\n ** err during dmgr startup"
-  exit 99
-fi
-echo -e "\n*** Container dmgr is started\n"
+EOM
 
-docker images |  grep wasnd85-node01 || docker-compose -f docker-compose-build-was85.yml build node01
-docker-compose -f docker-compose-build-was85.yml up -d node01
+$EXEC_DIR/build_was_cell.sh $ENVIRONMENT  $EXEC_DIR/docker-compose-build-was85.yml  ${WAS_INSTALLATION_VERSION}
 
-i=0
-while (( ($i * $sleeptime) < $maxwait )); do
-    sleep $sleeptime
-    let i=i+1
-    docker-compose -f docker-compose-build-was85.yml logs node01 | egrep 'NODE RECONFIG COMPLETE'
-    rc=$?
-    test $rc -eq 0 && break
-done
-if [ $rc -gt 0 ]; then
-  echo "\n ** err during node01 initial startup"
-  exit 98
-fi
-
-
-echo -e "\n*** Container node01 is started\n"
-
-docker images |  grep wasnd85-node02 || docker-compose -f docker-compose-build-was85.yml build node02
-docker-compose -f docker-compose-build-was85.yml up -d node02
-
-i=0
-while (( ($i * $sleeptime) < $maxwait )); do
-    sleep $sleeptime
-    let i=i+1
-    docker-compose -f docker-compose-build-was85.yml logs node02 | egrep 'NODE RECONFIG COMPLETE'
-    rc=$?
-    test $rc -eq 0 && break
-done
-if [ $rc -gt 0 ]; then
-  echo "\n ** err during node02 initial startup"
-  exit 98
-fi
-
-echo -e "\n*** Container node02 is started\n"
-
-
-docker commit dmgr wasnd85-cell-dmgr
-docker commit node01 wasnd85-cell-node01
-docker commit node02 wasnd85-cell-node02
-
-docker images| grep "wasnd85-cell"
-echo -e "\n*** WASv85 CELL images commited. All operations finished!\n"
+echo -e "\nWAS CELL images v${WAS_INSTALLATION_VERSION} committed. All operations finished!\n"

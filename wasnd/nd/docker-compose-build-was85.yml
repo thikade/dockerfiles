@@ -1,47 +1,37 @@
-version: '3'
+version: "3"
 
 networks:
   was8:
-    # driver: bridge
-    external: true
+    driver: bridge
 
 services:
-
-  wasnd_install_step1:
-    image: was85_delete_me
+  wasnd_chained_build:
+    image: wasnd-noprofile:${WAS_INSTALLATION_VERSION}
     hostname: was
     build:
       context: ./install
-      dockerfile: Dockerfile.v85.prereq
+      dockerfile: Dockerfile.v85.install_chainedBuilds
       args:
-        user: wasadmin
-        group: wasadmin
-        URL: http://192.168.99.100:8080/WASND
-        REPOS: http://192.168.99.100:8080/WASND/85513/BASE/,http://192.168.99.100:8080/WASND/JDK8/8056/
-    networks:
-      - was8
-
-  wasnd_install_step2:
-    image: wasnd85-noprofile
-    hostname: dmgr
-    build:
-      context: ./install
-      dockerfile: Dockerfile.v85.install
-      args:
+        WAS_VERSION: ${WAS_INSTALLATION_VERSION_IM}
+        JDK_VERSION: ${JDK_INSTALLATION_VERSION_IM}
+        BASE_REPO: ${DOWNLOAD_URL_8550}
+        FIX_REPOS: ${IM_REPOSITORIES}
+        IM_INSTALLER_URL: ${IM_INSTALLER_URL}
         user: wasadmin
         group: wasadmin
     networks:
       - was8
 
   dmgr:
-    image: wasnd85-dmgr
+    image: wasnd-dmgr:${WAS_INSTALLATION_VERSION}
     container_name: dmgr
     hostname: dmgr
     build:
       context: ./dmgr
       dockerfile: Dockerfile.was85
       args:
-        PROFILE_NAME: Dmgr01
+        WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
+        PROFILE_NAME: dmgr
         CELL_NAME: DefaultCell
         NODE_NAME: ManagerNode
         # HOST_NAME: localhost
@@ -73,16 +63,18 @@ services:
       - was8
 
   node01:
-    image: wasnd85-node01
+    image: wasnd-node01:${WAS_INSTALLATION_VERSION}
     container_name: node01
     hostname: node01
     build:
       context: ./custom
       dockerfile: Dockerfile.was85
       args:
+        WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom
+        NODE_NAME: CustomNode01
     environment:
-      NODE_NAME: Node01
+      NODE_NAME: CustomNode01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:
@@ -110,16 +102,18 @@ services:
       - was8
 
   node02:
-    image: wasnd85-node02
+    image: wasnd-node02:${WAS_INSTALLATION_VERSION}
     container_name: node02
     hostname: node02
     build:
       context: ./custom
       dockerfile: Dockerfile.was85
       args:
+        WAS_INSTALLATION_VERSION: ${WAS_INSTALLATION_VERSION}
         PROFILE_NAME: Custom
+        NODE_NAME: CustomNode02
     environment:
-      NODE_NAME: Node02
+      NODE_NAME: CustomNode02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:

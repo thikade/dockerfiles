@@ -5,6 +5,7 @@
 # eg. 9.0.0.11 or 9.0.5.0
 # default is 9.0.5.0
 # edit .env to support/add new WAS versions!
+
 function help {
   cat << EOM
 
@@ -26,8 +27,9 @@ test "$1" = "-h" -o "$1" = "--help" && help && exit 0
 # get calling path
 EXEC_DIR=$(dirname $0)
 
+ENVIRONMENT=$EXEC_DIR/.env
 # source Environment & WAS_INSTALLATION_VERSION
-. $EXEC_DIR/.env $1
+. $ENVIRONMENT $1
 
 echo ""
 echo "==========================================================================="
@@ -62,7 +64,7 @@ if [ $? -ne 0 ] ; then
     if docker ps | grep $FILESERVER_CONTAINER_NAME  > /dev/null ; then
         echo "#1.2 $FILESERVER_NAME is running"
     else
-        echo "#1.2 starting $FILESERVER_NAME"
+        echo "#1.2 starting fileserver container: $FILESERVER_NAME"
         # docker run -d  --name caddy -p 8080:8080 -v /INSTALL:/data caddy
         docker run --name $FILESERVER_CONTAINER_NAME --rm -v $FILESERVER_DIR:/usr/share/nginx/html:ro -d -p$FILESERVER_HTTP_PORT:80 nginx:stable-alpine \
               /bin/sh -c "sed -i 's/location \/ {/location \/ {\nautoindex on;/' /etc/nginx/conf.d/default.conf  && echo 'starting nginx ....' && exec nginx -g 'daemon off;'"
@@ -78,7 +80,9 @@ if [ $? -ne 0 ] ; then
     fi
 
     echo "#1.4 installing WASND v9"
-    docker-compose -f $EXEC_DIR/docker-compose-build-was9.yml build wasnd_chained_build
+    CMD="docker-compose -f $EXEC_DIR/docker-compose-build-was9.yml build wasnd_chained_build"
+    echo $CMD
+    $CMD
     docker images --format ' {{.Repository }}:{{.Tag}}'  | grep "$BASE_IMAGE" > /dev/null
     if [ $? -ne 0 ]; then
        echo "#1.4 ERROR: base image $BASE_IMAGE not found!"
@@ -86,19 +90,19 @@ if [ $? -ne 0 ] ; then
     fi
     cat << EOM
 
-    ============================================================
-    #1.5 base image is now complete: $BASE_IMAGE
-    ============================================================
+============================================================
+#1.5 base image is now complete: $BASE_IMAGE
+============================================================
 
 EOM
 
 else
   cat << EOM
 
-  ============================================================
-  #1 base image exists: ${BASE_IMAGE}  -  skipping rebuild.
-     Delete base image if you want to rebuild!
-  ============================================================
+============================================================
+#1 base image exists: ${BASE_IMAGE}  -  skipping rebuild.
+   Delete base image if you want to rebuild!
+============================================================
 
 EOM
 fi
@@ -109,46 +113,12 @@ cat << EOM
 ============================================================
   #2 creating a working cell (dmgr + 2 nodes) ...
 
-     (running "$EXEC_DIR/build_cell_was9.sh")
+     (running "$EXEC_DIR/build_was_cell.sh  $ENVIRONMENT  $EXEC_DIR/docker-compose-build-was9.yml  ${WAS_INSTALLATION_VERSION}")
 ============================================================
 
 EOM
 
-$EXEC_DIR/build_cell_was9.sh ${WAS_INSTALLATION_VERSION}
+# $EXEC_DIR/build_cell_was9.sh ${WAS_INSTALLATION_VERSION}
+$EXEC_DIR/build_was_cell.sh $ENVIRONMENT  $EXEC_DIR/docker-compose-build-was9.yml  ${WAS_INSTALLATION_VERSION}
 
-# docker images --format ' {{.Repository }}:{{.Tag}}' | grep wasnd9-dmgr:$WAS_INSTALLATION_VERSION  > /dev/null
-# if [ $? -ne 0 ] ; then
-#   echo "#2 Bootstrapping DMGR ..."
-#   docker-compose -f docker-compose-build-was9.yml build dmgr
-# fi
-# echo "#2 Starting DMGR ..."
-# docker-compose -f docker-compose-build-was9.yml up -d dmgr
-# sleep 100
-# echo "#2 Container dmgr is started"
-#
-#
-# # create NODE_COUNT node images
-# NODE_COUNT=2
-#
-# for NN in $(seq  -f '%02.0f' 1 $NODE_COUNT); do
-#
-#     docker images --format ' {{.Repository }}:{{.Tag}}' | grep wasnd9-node${NN}:$WAS_INSTALLATION_VERSION  > /dev/null
-#     if [ $? -ne 0 ] ; then
-#       echo "#4.${NN} Bootstrapping node${NN} ..."
-#       docker-compose -f docker-compose-build-was9.yml build node${NN}
-#     fi
-#     echo "#4.${NN} Starting Node${NN} ..."
-#     docker-compose -f docker-compose-build-was9.yml up -d node${NN}
-#     sleep 120
-#     echo "#4.${NN} Container node${NN} is started"
-#
-# done
-#
-# echo "#5 - committing new cell images ..."
-# docker commit dmgr wasnd9-cell-dmgr:$WAS_INSTALLATION_VERSION
-# docker commit node01 wasnd9-cell-node01:$WAS_INSTALLATION_VERSION
-# docker commit node02 wasnd9-cell-node02:$WAS_INSTALLATION_VERSION
-#
-# docker images --format ' {{.Repository }}:{{.Tag}}'| grep "wasnd9-cell"| grep $WAS_INSTALLATION_VERSION
-
-echo -e "\nWASv9 CELL images commited. All operations finished!\n"
+echo -e "\nWAS CELL images v${WAS_INSTALLATION_VERSION} committed. All operations finished!\n"

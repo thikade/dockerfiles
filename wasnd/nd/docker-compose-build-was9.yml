@@ -15,7 +15,7 @@ networks:
 
 services:
   wasnd_chained_build:
-    image: wasnd9-noprofile:${WAS_INSTALLATION_VERSION}
+    image: wasnd-noprofile:${WAS_INSTALLATION_VERSION}
     hostname: was
     build:
       context: ./install
@@ -31,7 +31,7 @@ services:
       - was9
 
   dmgr:
-    image: wasnd9-dmgr:${WAS_INSTALLATION_VERSION}
+    image: wasnd-dmgr:${WAS_INSTALLATION_VERSION}
     container_name: dmgr
     hostname: dmgr
     build:
@@ -70,7 +70,7 @@ services:
       - was9
 
   node01:
-    image: wasnd9-node01:${WAS_INSTALLATION_VERSION}
+    image: wasnd-node01:${WAS_INSTALLATION_VERSION}
     container_name: node01
     hostname: node01
     build:
@@ -110,7 +110,7 @@ services:
       - was9
 
   node02:
-    image: wasnd9-node02:${WAS_INSTALLATION_VERSION}
+    image: wasnd-node02:${WAS_INSTALLATION_VERSION}
     container_name: node02
     hostname: node02
     build:

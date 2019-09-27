@@ -79,12 +79,15 @@ FROM WASBaseImage
 ARG user=wasadmin
 ARG group=wasadmin
 
+ENV WAS_USER=${user}
+ENV WAS_GROUP=${group}
+
 ENV PATH /opt/IBM/WebSphere/AppServer/bin:$PATH
 
 
 COPY --from=Exporter /opt/IBM/WebSphere/AppServer/ /opt/IBM/WebSphere/AppServer/
 
-RUN groupadd $group && useradd $user -g $group -m && \
-    mkdir /work && chown -R $user:$group /work /opt/IBM/WebSphere/AppServer/
+RUN groupadd $WAS_GROUP && useradd $WAS_USER -g $WAS_GROUP -m && \
+    mkdir /work && chown -R $WAS_USER:$WAS_GROUP /work /opt/IBM/WebSphere/AppServer/
 
-USER $user
+USER $WAS_USER

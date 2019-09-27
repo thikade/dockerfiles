@@ -20,22 +20,22 @@ EXPOSE 2809 9402 9403 9353 9633 9100 11004 11003 9401 7276 7286 5558 5578 5060 5
 COPY *.sh *.py /work/
 
 RUN echo "$NODE_NAME" > /tmp/nodename && \
-    echo "$HOST_NAME" > /tmp/hostname
+  echo "$HOST_NAME" > /tmp/hostname
 
 # Create default Custom Node profile
 RUN echo "\nNODE_NAME=$NODE_NAME" && \
-    echo "CELL_NAME=$CELL_NAME" && \
-    echo "HOST_NAME=$HOST_NAME" && \
-    echo "PROFILE_NAME=$PROFILE_NAME\n" && \
-    /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
-    /opt/IBM/WebSphere/AppServer/profileTemplates/managed -profileName $PROFILE_NAME \
-    -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME -cellName $CELL_NAME \
-    -nodeName $NODE_NAME -disableWASDesktopIntegration -FederateLater true -hostName $HOST_NAME
+  echo "CELL_NAME=$CELL_NAME" && \
+  echo "HOST_NAME=$HOST_NAME" && \
+  echo "PROFILE_NAME=$PROFILE_NAME\n" && \
+  /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
+  /opt/IBM/WebSphere/AppServer/profileTemplates/managed -profileName $PROFILE_NAME \
+  -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME -cellName $CELL_NAME \
+  -nodeName $NODE_NAME -disableWASDesktopIntegration -FederateLater true -hostName $HOST_NAME
 
 USER root
 RUN ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME           /PROF  && \
-    ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs      /LOGS
+  ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs      /LOGS
 
-USER $user
+USER $WAS_USER
 
 CMD ["/work/updateHostAndAddNode.sh"]

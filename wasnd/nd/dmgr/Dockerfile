@@ -40,5 +40,5 @@ USER root
 RUN ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME           /PROF  && \
   ln -s /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/logs/dmgr   /LOGS
 
-USER $user
+USER $WAS_USER
 CMD ["bash", "/work/startDmgr.sh"]

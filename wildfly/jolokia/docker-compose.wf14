@@ -1,11 +1,15 @@
 version: '3'
 
-### docker run --rm -ti  --name wildfly -h wf -p 8080:8080 -p 8443:8443 -p 9990:9990 thikade/wildfly:14.0.1.Final
+### docker run --rm -ti  --name wildfly -h wf -p 8080:8080 -p 8443:8443 -p 9990:9990 wildfly:14.0.1.Final-jolokia
 
 services:
   wildfly14:
-    build: .
-    image: thikade/wildfly:14.0.1.Final
+    build:
+      dockerfile: Dockerfile.wf14
+      context: .
+#       args:
+#         - WAR_LOCATION=apps
+    image: wildfly:14.0.1.Final-jolokia
     container_name: wildfly14
     environment:
       DUMMY: test

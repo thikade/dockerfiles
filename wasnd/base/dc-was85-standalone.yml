@@ -1,0 +1,101 @@
+version: "2"
+
+networks:
+  was85base:
+    driver: bridge
+
+services:
+  ldap:
+    # docker run --env LDAP_ORGANISATION="2i" --env LDAP_DOMAIN="2i.at" --env LDAP_ADMIN_PASSWORD="admin" --detach --name ldap  -v ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom  osixia/openldap:1.2.1 --copy-service --loglevel=info
+
+    # docker exec ldap bash -c "ldapadd -x  -D cn=admin,dc=2i,dc=at  -w admin -H ldap:// -f  /import/ldap-content.ldif -c"
+    # ldapsearch -x  -b dc=2i,dc=at -D cn=admin,dc=2i,dc=at -w admin
+
+    # image: thikade/openldap:1.1.7-imported
+    image: osixia/openldap:1.2.1
+    container_name: ldap1
+    hostname: ldap1
+    environment:
+      LDAP_ORGANISATION: 2i
+      LDAP_DOMAIN: 2i.at
+      LDAP_ADMIN_PASSWORD: admin
+    expose:
+      - "389"
+      - "636"
+    ports:
+      - "10389:389"
+      - "10636:636"
+    volumes:
+      - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    # entrypoint: "sh -c 'while true; do sleep 60; echo hello; done'"
+    command: --copy-service --loglevel=debug
+    networks:
+      - was85base
+
+  ldap2:
+    image: osixia/openldap:1.2.1
+    container_name: ldap2
+    hostname: ldap2
+    environment:
+      LDAP_ORGANISATION: 2i
+      LDAP_DOMAIN: 2i.at
+      LDAP_ADMIN_PASSWORD: admin
+    expose:
+      - "389"
+      - "636"
+    ports:
+      - "20389:389"
+      - "20636:636"
+    volumes:
+      - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    command: --copy-service --loglevel=info
+    networks:
+      - was85base
+
+  was85base:
+    # image: ibmcom/websphere-traditional:9.0.0.11
+    image: websphere-traditional:8.5.5.14
+    container_name: was85base
+    hostname: was85base
+    build:
+      context: .
+      dockerfile: Dockerfile.v85
+      args:
+        ADMIN_PASSWORD: wsadmin
+    environment:
+      ADMIN_USER_NAME: wsadmin
+      ADMIN_PASSWORD: wsadmin
+      ENABLE_BASIC_LOGGING: "true"
+      WASCONFIG_RUNAS_USER: was
+      WASCONFIG_WAS_ROOT: /opt/IBM/WebSphere/AppServer
+      WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
+      WASCONFIG_PROFILE_NAME: AppSrv01
+      WASCONFIG_ADMIN_HOST: localhost
+      WASCONFIG_ADMIN_PORT: 8880
+      WASCONFIG_ADMIN_USER: wsadmin
+      WASCONFIG_ADMIN_PASS: wsadmin
+    expose:
+      - "9060"
+      - "9043"
+      - "9809"
+      - "8879"
+      - "9632"
+      - "9401"
+      - "9403"
+      - "9402"
+      - "9100"
+      - "7277"
+      - "9352"
+      - "5555"
+      - "7060"
+      - "11005"
+      - "11006"
+      - "9420"
+    ports:
+      - "9060:9060"
+      - "9043:9043"
+    volumes:
+      - $PRJ_ROOT/wasconfig:/wasconfig:rw
+      - $PRJ_ROOT/was_configs:/config:rw
+    networks:
+      - was85base

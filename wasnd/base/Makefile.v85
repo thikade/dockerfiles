@@ -1,0 +1,13 @@
+COMPOSE_FILE := dc-was85-standalone.yml
+CONTAINER := was85base
+
+default: all-ldap
+
+base start :
+	docker-compose  -f $(COMPOSE_FILE) up -d $(CONTAINER)
+all-ldap:
+	docker-compose  -f $(COMPOSE_FILE) up -d
+stop:
+	docker-compose  -f $(COMPOSE_FILE) down
+restart:
+	docker-compose  -f $(COMPOSE_FILE) stop $(CONTAINER); docker-compose  -f $(COMPOSE_FILE) start $(CONTAINER)

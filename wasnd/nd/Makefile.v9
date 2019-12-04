@@ -1,13 +1,21 @@
+SHELL := /usr/bin/bash
+
+WAS_INSTALLATION_VERSION = 9.0.5.0
+
+COMPOSE_FILE = docker-compose-run-was9.yml
+
 default: all
-all:
-	docker-compose  -f docker-compose-run-was9.yml  up -d dmgr node01 node02
-all-ldap:
-	docker-compose  -f docker-compose-run-was9.yml  up -d dmgr node01 node02 ldap ldap2
-start-dmgr:
-	docker-compose  -f docker-compose-run-was9.yml  up -d dmgr
-stop-all:
-	docker-compose  -f docker-compose-run-was9.yml  down
-restart:
-	docker-compose  -f docker-compose-run-was9.yml  stop dmgr node01 node02; docker-compose  -f docker-compose-run-was9.yml  start dmgr node01 node02
-logs:
-	docker-compose  -f docker-compose-run-was9.yml  logs -f dmgr node01 node02
+env:
+	echo WAS version: $(WAS_INSTALLATION_VERSION)
+all: env
+	docker-compose  -f $(COMPOSE_FILE)  up -d dmgr node01 node02
+all-ldap: env
+	docker-compose  -f $(COMPOSE_FILE)  up -d dmgr node01 node02 ldap ldap2
+start-dmgr: env
+	docker-compose  -f $(COMPOSE_FILE)  up -d dmgr
+stop-all: env
+	docker-compose  -f $(COMPOSE_FILE)  down
+restart: env
+	docker-compose  -f $(COMPOSE_FILE)  stop dmgr node01 node02; docker-compose  -f $(COMPOSE_FILE)  start dmgr node01 node02
+logs: env
+	docker-compose  -f $(COMPOSE_FILE)  logs -f dmgr node01 node02

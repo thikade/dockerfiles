@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 networks:
   ansible-demo-network:
@@ -11,7 +11,7 @@ services:
       dockerfile: Dockerfile
       # args:
       #  URL: http://192.168.99.100:8080/
-    image: thikade/ansible:2.7-ubuntu
+    image: thikade/ansible:2.9.5-ubuntu
     container_name: ansible-master
     hostname: ansible-master
     environment:
@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
       # args:
       #  URL: http://192.168.99.100:8080/
-    image: thikade/ansible:2.7-ubuntu
+    image: thikade/ansible:2.9.5-ubuntu
     container_name: ansible-node01
     hostname: ansible-node01
     environment:

@@ -1,5 +1,5 @@
-FROM ubuntu:latest
-# tag as thikade/ansible:2.7-ubuntu
+FROM ubuntu:18.04
+# tag as thikade/ansible:latest-ubuntu
 
 MAINTAINER  thikade "thomas.hikade@gmail.com"
 

@@ -1,35 +1,9 @@
 #!/bin/bash
 
-WEB_URL=${1:-http://192.168.99.100:8080}
-DOC_ROOT=${2:-/INSTALL}
-
-echo "WEB_URL=${WEB_URL}"
-echo "DOC_ROOT=${DOC_ROOT}"
-
-export WEB_URL
-export DOC_ROOT
-
 docker images | grep wasnd9-noprofile
 if [ $? -ne 0 ] ; then
 
     if [ ! -f "install/was9.tar" ]; then
-      if docker ps | grep caddy ; then
-          echo "caddy is running"
-      else
-          echo "starting caddy"
-          docker run -d  --name caddy -p 8080:8080 -v ${DOC_ROOT}:/data caddy
-          # Allow caddy container to start
-          sleep 7
-      fi
-
-      curl -sSo /dev/null  $WEB_URL/WASND
-      if [ $? -eq 0 ] ; then
-        echo "caddy is working"
-      else
-        echo "caddy not working. Aborting"!
-        exit 100
-      fi
-
       echo "installing WASND v9 - Step 1"
       docker-compose -f docker-compose-build-was9.yml build wasnd_install_step1
       docker images  | grep "was9_delete_me"

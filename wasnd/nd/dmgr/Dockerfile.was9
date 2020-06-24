@@ -36,9 +36,9 @@ RUN /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
     -enableAdminSecurity true -adminUserName wasadmin -adminPassword wasadmin
 
 # Augment the eXtreme scale if installed
-RUN echo "Augmenting profile ${PROFILE_NAME} with WebSphere eXtreme scale" \
-    &&  /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/manageprofiles.sh -augment -profileName $PROFILE_NAME -templatePath /opt/IBM/WebSphere/AppServer/profileTemplates/xs_augment/ \
-    &&  echo "Profile ${PROFILE_NAME} successfully augmented with WebSphere eXtreme scale"
+##### RUN echo "Augmenting profile ${PROFILE_NAME} with WebSphere eXtreme scale" \
+#####     &&  /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME/bin/manageprofiles.sh -augment -profileName $PROFILE_NAME ##### -templatePath /opt/IBM/WebSphere/AppServer/profileTemplates/xs_augment/ \
+#####     &&  echo "Profile ${PROFILE_NAME} successfully augmented with WebSphere eXtreme scale"
 
 
 EXPOSE 9060 9043 9809 8879 9632 9401 9403 9402 9100 7277 9352 5555 7060 11005 11006 9420

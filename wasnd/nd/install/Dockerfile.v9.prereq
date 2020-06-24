@@ -16,8 +16,8 @@
 
 FROM ubuntu:16.04
 
-# based on work from  Kavitha Suresh Kumar <kavisuresh@in.ibm.com>
-MAINTAINER thomas.hikade@gmail.com
+# based on work from  Kavitha Suresh Kumar <kavisuresh@in.ibm.com> and Thomas Hikade <thomas.hikade@gmail.com>
+MAINTAINER hhue13@gmail.com
 
 RUN apt-get update && apt-get install -y unzip wget iputils-ping
 
@@ -29,8 +29,8 @@ RUN groupadd $group && useradd $user -g $group -m\
 
 USER $user
 
-ARG URL=http://192.168.99.100:8080/WASND
-ARG REPOS=$URL/9000/BASE,$URL/JDK-80511
+ARG URL=http://192.168.57.1:8080/WASND
+ARG REPOS=$URL/9000/BASE,$URL/9050,$URL/9054,$URL/JDK-80610
 
 ARG WAS_VERSION=com.ibm.websphere.ND.v90
 ARG JDK_VERSION=com.ibm.java.jdk.v8
@@ -45,7 +45,7 @@ ARG WXS_REPOS
 # Install IBM Installation Manager
 RUN   echo -e "URL is: $URL; \nREPOS is: $REPOS; \nWAS_VERSION=$WAS_VERSION; \nJDK_VERSION=$JDK_VERSION; \nWXS_CLIENT_FIX_LIST=$WXS_CLIENT_FIX_LIST" \
       &&  echo -e "WXS_SERVER_VERSION=$WXS_SERVER_VERSION; \nWXS_CLIENT_VERSION=$WXS_CLIENT_VERSION; \nWXS_SERVER_FIX_LIST=$WXS_SERVER_FIX_LIST; \nWXS_REPOS=$WXS_REPOS" \
-      &&  wget -q $URL/agent.installer.linux.gtk.x86_64_1.8.9001.20180709_1302.zip -O /tmp/IM.zip \
+      &&  wget -q $URL/agent.installer.linux.gtk.x86_64_1.9.1002.20200325_1842.zip -O /tmp/IM.zip \
       &&  echo "Pulled IM image" \
       &&  mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
       &&  echo "Unpacked IM image" \
@@ -62,7 +62,8 @@ RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -rep
         -acceptLicense install $WAS_VERSION $JDK_VERSION \
         -repositories $REPOS \
         -installationDirectory /opt/IBM/WebSphere/AppServer \
-        -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false
+        -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
+      && /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
 
 ### IBM WebSphere eXtreme scale server - exclusive OR with the WXS-WAS-Client ######################
 ##### RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $WXS_REPOS  \
@@ -80,18 +81,18 @@ RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -rep
 
 
 ### IBM WebSphere eXtreme scale client - exclusive OR with the WXS-WAS-Server ######################
-RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $WXS_REPOS  \
-      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
-          -acceptLicense install $WXS_CLIENT_VERSION \
-          -repositories $WXS_REPOS \
-          -installationDirectory /opt/IBM/WebSphere/AppServer \
-          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
-      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
-          -acceptLicense install $WXS_CLIENT_FIX_LIST \
-          -repositories $WXS_REPOS \
-          -installationDirectory /opt/IBM/WebSphere/AppServer \
-          -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
-      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
+##### RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $WXS_REPOS  \
+#####       &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+#####           -acceptLicense install $WXS_CLIENT_VERSION \
+#####           -repositories $WXS_REPOS \
+#####           -installationDirectory /opt/IBM/WebSphere/AppServer \
+#####           -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.pre##### ferences.keepFetchedFiles=false \
+#####       &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+#####           -acceptLicense install $WXS_CLIENT_FIX_LIST \
+#####           -repositories $WXS_REPOS \
+#####           -installationDirectory /opt/IBM/WebSphere/AppServer \
+#####           -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.pre##### ferences.keepFetchedFiles=false \
+#####       &&  /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
 
 
 CMD ["tar","cvf","/tmp/was9.tar","/opt/IBM/WebSphere/AppServer"]

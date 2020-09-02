@@ -15,11 +15,11 @@ update_host_node_name()
     #Check whether node name is provided or use default
     if [ "$NODE_NAME" = "" ]
     then
-       NODE_NAME="ManagerNode"
+       NODE_NAME="dmgrNode"
     else
        # Update the nodename
        /opt/IBM/WebSphere/AppServer/bin/wsadmin.sh -lang jython -conntype NONE -f /work/updateNodeName.py \
-       ManagerNode $NODE_NAME
+       dmgrNode $NODE_NAME
 
        echo "WAS_NODE=$NODE_NAME" >> /opt/IBM/WebSphere/AppServer/bin/setupCmdLine.sh
 
@@ -36,7 +36,7 @@ startDmgr()
 {
     if [ "$PROFILE_NAME" = "" ]
     then
-        PROFILE_NAME="Dmgr01"
+        PROFILE_NAME="dmgr"
     fi
 
     echo "Starting deployment manager ............"
@@ -58,7 +58,7 @@ stopDmgr()
 {
     if [ "$PROFILE_NAME" = "" ]
     then
-        PROFILE_NAME="Dmgr01"
+        PROFILE_NAME="dmgr"
     fi
 
     echo "Stopping deployment manager ............"

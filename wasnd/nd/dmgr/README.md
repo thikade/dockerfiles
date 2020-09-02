@@ -5,7 +5,7 @@ An IBM WebSphere Application Server Network Deployment deployment manager image 
 The Dockerfile takes the values for the following variables at build time:
 * CELL_NAME (optional, default is 'DefaultCell01') - cell name
 * NODE_NAME (optional, default is 'DefaultNode01') - node name
-* PROFILE_NAME (optional, default is 'Dmgr01') - profile name
+* PROFILE_NAME (optional, default is 'dmgr') - profile name
 * HOST_NAME (optional, default is 'dmgr') - host name
 
 The Dockerfile takes the following actions:

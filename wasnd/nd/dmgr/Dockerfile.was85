@@ -19,13 +19,13 @@ FROM wasnd85-noprofile
 # based on https://github.com/WASdev/ci.docker.websphere-traditional/
 MAINTAINER thikade <thomas.hikade@gmail.com>
 
-ARG PROFILE_NAME=Dmgr01
+ARG PROFILE_NAME=dmgr
 ARG CELL_NAME=DefaultCell01
 
 ### DO NOT CHANGE hostname 'localhost' or node name at build time!
 ### Hostname will be changed by container ENTRYPOINT/CMD script!
 ### using the container's real hostname
-ENV NODE_NAME=ManagerNode
+ENV NODE_NAME=dmgrNode
 ENV HOST_NAME=localhost
 
 # Create Deployment Manager profile

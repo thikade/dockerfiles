@@ -1,12 +1,11 @@
-version: '2'
+version: "2"
 
 networks:
-   was9:
-     # driver: bridge
-     external: true
+  was9:
+    # driver: bridge
+    external: true
 
 services:
-
   ldap:
     # docker run --env LDAP_ORGANISATION="2i" --env LDAP_DOMAIN="2i.at" --env LDAP_ADMIN_PASSWORD="admin" --detach --name ldap  -v ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom  osixia/openldap:1.2.1 --copy-service --loglevel=info
 
@@ -66,14 +65,14 @@ services:
     container_name: dmgr
     hostname: dmgr
     environment:
-      WASCONFIG_RUNAS_USER : wasadmin
-      WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
-      WASCONFIG_PROFILE_PATH : /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
-      WASCONFIG_PROFILE_NAME : Dmgr01
-      WASCONFIG_ADMIN_HOST : dmgr
-      WASCONFIG_ADMIN_PORT : 8879
-      WASCONFIG_ADMIN_USER : wasadmin
-      WASCONFIG_ADMIN_PASS : wasadmin
+      WASCONFIG_RUNAS_USER: wasadmin
+      WASCONFIG_WAS_ROOT: /opt/IBM/WebSphere/AppServer
+      WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/dmgr
+      WASCONFIG_PROFILE_NAME: dmgr
+      WASCONFIG_ADMIN_HOST: dmgr
+      WASCONFIG_ADMIN_PORT: 8879
+      WASCONFIG_ADMIN_USER: wasadmin
+      WASCONFIG_ADMIN_PASS: wasadmin
     expose:
       - "9060"
       - "9043"
@@ -106,7 +105,7 @@ services:
     depends_on:
       - dmgr
     environment:
-      NODE_NAME: CustomNode01
+      NODE_NAME: node01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     hostname: node01
@@ -144,7 +143,7 @@ services:
     depends_on:
       - dmgr
     environment:
-      NODE_NAME: CustomNode02
+      NODE_NAME: node02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:

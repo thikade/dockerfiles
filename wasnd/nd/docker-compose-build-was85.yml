@@ -41,9 +41,9 @@ services:
       context: ./dmgr
       dockerfile: Dockerfile.was85
       args:
-        PROFILE_NAME: Dmgr01
+        PROFILE_NAME: dmgr
         CELL_NAME: DefaultCell
-        NODE_NAME: ManagerNode
+        NODE_NAME: dmgrNode
         # HOST_NAME: localhost
     # environment:
     #   DUMMY: test
@@ -82,7 +82,7 @@ services:
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: Node01
+      NODE_NAME: node01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
       WAIT: 15
@@ -120,7 +120,7 @@ services:
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: Node02
+      NODE_NAME: node02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
       WAIT: 15

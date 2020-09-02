@@ -24,7 +24,7 @@ if [ $? -ne 0 ] ; then
 
       if [ -f "was.tar" ] ; then
         echo -e "*** WAS Install image 'was.tar' created successfully"
-        docker rmi was85_delete_me
+        docker rmi -f was85_delete_me
         mv was.tar install/
         #
         # Copy jar file with customer registry sample class
@@ -120,6 +120,15 @@ echo "Container node02 is started. Press any key to continue ..."
 docker commit dmgr wasnd85-cell-dmgr
 docker commit node01 wasnd85-cell-node01
 docker commit node02 wasnd85-cell-node02
+
+docker tag wasnd85-cell-dmgr gcr.io/was-config-tool/wasnd85-cell-dmgr:8.5.5.17
+docker tag wasnd85-cell-node01 gcr.io/was-config-tool/wasnd85-cell-node01:8.5.5.17
+docker tag wasnd85-cell-node02 gcr.io/was-config-tool/wasnd85-cell-node02:8.5.5.17
+
+docker tag wasnd85-cell-dmgr s008aa39r:18444/wasnd85-cell-dmgr:latest
+docker tag wasnd85-cell-node01 s008aa39r:18444/wasnd85-cell-node01:latest
+docker tag wasnd85-cell-node02 s008aa39r:18444/wasnd85-cell-node02:latest
+
 
 docker images| grep "wasnd85-cell"
 echo -e "\n*** WASv85 CELL images commited. All operations finished!\n"

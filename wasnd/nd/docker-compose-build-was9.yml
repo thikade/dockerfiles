@@ -1,12 +1,11 @@
-version: '2'
+version: "2"
 
 networks:
-   was9:
-#     # driver: bridge
-     external: true
+  was9:
+    #     # driver: bridge
+    external: true
 
 services:
-
   wasnd_install_step1:
     image: was9_delete_me
     hostname: was
@@ -39,7 +38,6 @@ services:
     networks:
       - was9
 
-
   dmgr:
     image: wasnd9-dmgr
     container_name: dmgr
@@ -48,9 +46,9 @@ services:
       context: ./dmgr
       dockerfile: Dockerfile.was9
       args:
-        PROFILE_NAME: Dmgr01
+        PROFILE_NAME: dmgr
         CELL_NAME: DefaultCell
-        NODE_NAME: ManagerNode
+        NODE_NAME: dmgrNode
     # environment:
     #   DUMMY: test
     expose:
@@ -88,7 +86,7 @@ services:
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: Node01
+      NODE_NAME: node01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
       WAIT: 15
@@ -114,7 +112,7 @@ services:
       - 9080
       - 9443
     networks:
-     - was9
+      - was9
 
   node02:
     image: wasnd9-node02
@@ -126,7 +124,7 @@ services:
       args:
         PROFILE_NAME: Custom
     environment:
-      NODE_NAME: Node02
+      NODE_NAME: node02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
       WAIT: 15

@@ -1,11 +1,10 @@
-version: '3'
+version: "3"
 
 networks:
   was9:
     driver: bridge
 
 services:
-
   ldap1:
     image: s008aa39r:18444/ldap:latest
     container_name: ldap1.v9.docker.container
@@ -38,7 +37,7 @@ services:
 
   dmgr:
     image: s008aa39r:18444/centos_ws:was_9.0.0.9_dmgr.1.1.wxs
-##### image: eu.gcr.io/was-config-tool/was_9.0.0.9_dmgr:1.1
+    ##### image: eu.gcr.io/was-config-tool/was_9.0.0.9_dmgr:1.1
     container_name: dmgr.v9.docker.container
     hostname: dmgr
     entrypoint:
@@ -46,17 +45,17 @@ services:
       - /workspace/ci-gcloud/bin/startContainerNoCi.sh
       - -exitOnServerStop false
     volumes:
-       - /opt/wasconfig:/workspace
+      - /opt/wasconfig:/workspace
 
     environment:
-      WASCONFIG_RUNAS_USER : wasadmin
-      WASCONFIG_WAS_ROOT : /opt/IBM/WebSphere/AppServer
-      WASCONFIG_PROFILE_PATH : /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
-      WASCONFIG_PROFILE_NAME : Dmgr01
-      WASCONFIG_ADMIN_HOST : dmgr
-      WASCONFIG_ADMIN_PORT : 8879
-      WASCONFIG_ADMIN_USER : wasadmin
-      WASCONFIG_ADMIN_PASS : wasadmin
+      WASCONFIG_RUNAS_USER: wasadmin
+      WASCONFIG_WAS_ROOT: /opt/IBM/WebSphere/AppServer
+      WASCONFIG_PROFILE_PATH: /opt/IBM/WebSphere/AppServer/profiles/Dmgr01
+      WASCONFIG_PROFILE_NAME: Dmgr01
+      WASCONFIG_ADMIN_HOST: dmgr
+      WASCONFIG_ADMIN_PORT: 8879
+      WASCONFIG_ADMIN_USER: wasadmin
+      WASCONFIG_ADMIN_PASS: wasadmin
     expose:
       - "9060"
       - "9043"
@@ -86,7 +85,7 @@ services:
     depends_on:
       - dmgr
     environment:
-      NODE_NAME: CustomNode01
+      NODE_NAME: node01
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     hostname: node01
@@ -124,7 +123,7 @@ services:
     depends_on:
       - dmgr
     environment:
-      NODE_NAME: CustomNode02
+      NODE_NAME: node02
       DMGR_HOST: dmgr
       DMGR_PORT: "8879"
     expose:
@@ -156,7 +155,7 @@ services:
     entrypoint: /bin/startContainer.sh -exitOnServiceStop false -wpHostName node1 -wpPortPrefix ${WP85_WAS_PORT_PREFIX_1}
     hostname: wxsihs851
     image: s008aa39r:18444/centos_ws:ihs.8.5.5.13.wxs
-##### image: s008aa39r:18444/centos_ihs:8.5.5.13
+    ##### image: s008aa39r:18444/centos_ihs:8.5.5.13
     depends_on:
       - dmgr
     expose:
@@ -173,11 +172,11 @@ services:
     entrypoint:
       - /bin/bash
       - /work/startWxs.sh
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server10 -listenerPort 2809 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -jvmArgs -Xmx256m'
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server11 -listenerPort 2810 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -jvmArgs -Xmx256m'
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container10 -catalogServiceEndPoints wxs01:2809,wxs01:2810,wxs02:2809,wxs02:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m'
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container11 -catalogServiceEndPoints wxs01:2809,wxs01:2810,wxs02:2809,wxs02:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m'
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startConsoleServer.sh'
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server10 -listenerPort 2809 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -jvmArgs -Xmx256m"
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server11 -listenerPort 2810 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -jvmArgs -Xmx256m"
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container10 -catalogServiceEndPoints wxs01:2809,wxs01:2810,wxs02:2809,wxs02:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m"
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container11 -catalogServiceEndPoints wxs01:2809,wxs01:2810,wxs02:2809,wxs02:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m"
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startConsoleServer.sh"
     hostname: wxs01
     image: s008aa39r:18444/wxs86_standalone:latest
     depends_on:
@@ -202,10 +201,10 @@ services:
     entrypoint:
       - /bin/bash
       - /work/startWxs.sh
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server20 -listenerPort 2809 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession -heartbeat 10  -jvmArgs -Xmx256m'
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server21 -listenerPort 2810 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -heartbeat 10 -jvmArgs -Xmx256m'
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container20 -catalogServiceEndPoints wxs02:2809,wxs02:2810,wxs01:2809,wxs01:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m -jvmArgs -Xmx256m '
-      - '/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container21 -catalogServiceEndPoints wxs02:2809,wxs02:2810,wxs01:2809,wxs01:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m'
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server20 -listenerPort 2809 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession -heartbeat 10  -jvmArgs -Xmx256m"
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh catalog_server21 -listenerPort 2810 -catalogServiceEndPoints catalog_server10:wxs01:6600:6601,catalog_server11:wxs01:6602:6603,catalog_server20:wxs02:6600:6601,catalog_server21:wxs02:6602:6603 -quorum true -heartbeat 10 -domain HTTPSession  -heartbeat 10 -jvmArgs -Xmx256m"
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container20 -catalogServiceEndPoints wxs02:2809,wxs02:2810,wxs01:2809,wxs01:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m -jvmArgs -Xmx256m "
+      - "/opt/IBM/WebSphere/eXtremeScale/server/ObjectGrid/bin/startXsServer.sh container21 -catalogServiceEndPoints wxs02:2809,wxs02:2810,wxs01:2809,wxs01:2810 -objectgridFile /work/sessionObjectGrid.xml -deploymentPolicyFile /work/sessionObjectGridDeployment.xml -jvmArgs -Xmx256m"
     hostname: wxs02
     image: s008aa39r:18444/wxs86_standalone:latest
     depends_on:
@@ -221,4 +220,3 @@ services:
       - 6603
     networks:
       - was9
-

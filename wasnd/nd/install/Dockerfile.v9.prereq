@@ -25,12 +25,14 @@ ARG user=wasadmin
 ARG group=wasadmin
 
 RUN groupadd $group && useradd $user -g $group -m\
-    && chown -R $user:$group /var /opt /tmp
+  && chown -R $user:$group /var /opt /tmp
 
 USER $user
 
 ARG URL=http://192.168.57.1:8080/WASND
 ARG REPOS=$URL/9000/BASE,$URL/9050,$URL/9054,$URL/JDK-80610
+
+ARG IM_FILE=agent.installer.linux.gtk.x86_64_1.9.1002.20200325_1842.zip
 
 ARG WAS_VERSION=com.ibm.websphere.ND.v90
 ARG JDK_VERSION=com.ibm.java.jdk.v8
@@ -44,26 +46,26 @@ ARG WXS_REPOS
 
 # Install IBM Installation Manager
 RUN   echo -e "URL is: $URL; \nREPOS is: $REPOS; \nWAS_VERSION=$WAS_VERSION; \nJDK_VERSION=$JDK_VERSION; \nWXS_CLIENT_FIX_LIST=$WXS_CLIENT_FIX_LIST" \
-      &&  echo -e "WXS_SERVER_VERSION=$WXS_SERVER_VERSION; \nWXS_CLIENT_VERSION=$WXS_CLIENT_VERSION; \nWXS_SERVER_FIX_LIST=$WXS_SERVER_FIX_LIST; \nWXS_REPOS=$WXS_REPOS" \
-      &&  wget -q $URL/agent.installer.linux.gtk.x86_64_1.9.1002.20200325_1842.zip -O /tmp/IM.zip \
-      &&  echo "Pulled IM image" \
-      &&  mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
-      &&  echo "Unpacked IM image" \
-      &&  /tmp/im/installc -acceptLicense -accessRights nonAdmin \
-          -installationDirectory "/opt/IBM/InstallationManager"  \
-          -dataLocation "/var/ibm/InstallationManager" -showProgress \
-      &&  rm -fr /tmp/IM.zip /tmp/im
+  &&  echo -e "WXS_SERVER_VERSION=$WXS_SERVER_VERSION; \nWXS_CLIENT_VERSION=$WXS_CLIENT_VERSION; \nWXS_SERVER_FIX_LIST=$WXS_SERVER_FIX_LIST; \nWXS_REPOS=$WXS_REPOS" \
+  &&  wget -q $URL/$IM_FILE -O /tmp/IM.zip \
+  &&  echo "Pulled IM image" \
+  &&  mkdir /tmp/im && unzip -qd /tmp/im /tmp/IM.zip \
+  &&  echo "Unpacked IM image" \
+  &&  /tmp/im/installc -acceptLicense -accessRights nonAdmin \
+  -installationDirectory "/opt/IBM/InstallationManager"  \
+  -dataLocation "/var/ibm/InstallationManager" -showProgress \
+  &&  rm -fr /tmp/IM.zip /tmp/im
 
 ### IBM WebSphere Application Server & IBM Java SDK ######################
 
 # Install IBM WebSphere Application Server v9 & IBM Java SDK 8
 RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $REPOS  \
-      &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
-        -acceptLicense install $WAS_VERSION $JDK_VERSION \
-        -repositories $REPOS \
-        -installationDirectory /opt/IBM/WebSphere/AppServer \
-        -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
-      && /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
+  &&  /opt/IBM/InstallationManager/eclipse/tools/imcl -showProgress \
+  -acceptLicense install $WAS_VERSION $JDK_VERSION \
+  -repositories $REPOS \
+  -installationDirectory /opt/IBM/WebSphere/AppServer \
+  -preferences com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts=false,com.ibm.cic.common.core.preferences.keepFetchedFiles=false \
+  && /opt/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages -long
 
 ### IBM WebSphere eXtreme scale server - exclusive OR with the WXS-WAS-Client ######################
 ##### RUN   /opt/IBM/InstallationManager/eclipse/tools/imcl listavailablePackages -repositories $WXS_REPOS  \

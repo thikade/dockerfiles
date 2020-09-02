@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 networks:
   was8:
@@ -6,7 +6,6 @@ networks:
     external: true
 
 services:
-
   wasnd_install_step1:
     image: was85_delete_me
     hostname: was
@@ -16,8 +15,8 @@ services:
       args:
         user: wasadmin
         group: wasadmin
-        URL: http://192.168.99.100:8080/WASND
-        REPOS: http://192.168.99.100:8080/WASND/85513/BASE/,http://192.168.99.100:8080/WASND/JDK8/8056/
+        URL: http://192.168.57.1:8080/WASND
+        REPOS: http://192.168.57.1:8080/WASND/8550/BASE/,http://192.168.57.1:8080/WASND/85513/BASE/,http://192.168.57.1:8080/WASND/JDK8/8056/,http://192.168.57.1:8080/WASND/85517,http://192.168.57.1:8080/WASND/JDK-80610
     networks:
       - was8
 
@@ -28,6 +27,7 @@ services:
       context: ./install
       dockerfile: Dockerfile.v85.install
       args:
+        WASVERSION: 8.5.5.17
         user: wasadmin
         group: wasadmin
     networks:

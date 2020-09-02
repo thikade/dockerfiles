@@ -32,7 +32,7 @@ ENV HOST_NAME=localhost
 RUN /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
     /opt/IBM/WebSphere/AppServer/profileTemplates/management -profileName $PROFILE_NAME \
     -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME  -serverType DEPLOYMENT_MANAGER \
-    -cellName $CELL_NAME -nodeName $NODE_NAME -disableWASDesktopIntegration -hostName $HOST_NAME \
+    -cellName $CELL_NAME -nodeName $NODE_NAME -disableWASDesktopIntegration -hostName $HOST_NAME -personalCertValidityPeriod 10 \
     -enableAdminSecurity true -adminUserName wasadmin -adminPassword wasadmin
 
 # Augment the eXtreme scale if installed

@@ -30,9 +30,11 @@ ENV HOST_NAME=localhost
 # Create default Custom Node profile
 RUN echo "NODE_NAME=${NODE_NAME}; PROFILE_NAME=${PROFILE_NAME}; HOST_NAME=${HOST_NAME}; CELL_NAME=${CELL_NAME}" && \
     /opt/IBM/WebSphere/AppServer/bin/manageprofiles.sh -create -templatePath \
-    /opt/IBM/WebSphere/AppServer/profileTemplates/managed -profileName $PROFILE_NAME \
-    -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME -cellName $CELL_NAME \
-    -nodeName $NODE_NAME -disableWASDesktopIntegration -federateLater true -hostName $HOST_NAME
+    /opt/IBM/WebSphere/AppServer/profileTemplates/managed \
+    -profileName $PROFILE_NAME \
+    -profilePath /opt/IBM/WebSphere/AppServer/profiles/$PROFILE_NAME \
+    -cellName $CELL_NAME -nodeName $NODE_NAME -disableWASDesktopIntegration \
+    -federateLater true -hostName $HOST_NAME -personalCertValidityPeriod 10
 
 #Expose the ports
 EXPOSE 2809 9402 9403 9353 9633 9100 11004 11003 9401 7276 7286 5558 5578 5060 5061 8880 9060 9043 9080 9443

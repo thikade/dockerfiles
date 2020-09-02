@@ -121,9 +121,9 @@ docker commit dmgr wasnd85-cell-dmgr
 docker commit node01 wasnd85-cell-node01
 docker commit node02 wasnd85-cell-node02
 
-docker tag wasnd85-cell-dmgr gcr.io/was-config-tool/wasnd85-cell-dmgr:8.5.5.17
-docker tag wasnd85-cell-node01 gcr.io/was-config-tool/wasnd85-cell-node01:8.5.5.17
-docker tag wasnd85-cell-node02 gcr.io/was-config-tool/wasnd85-cell-node02:8.5.5.17
+docker tag wasnd85-cell-dmgr gcr.io/was-config-tool/wasnd-cell-dmgr:8.5.5.17
+docker tag wasnd85-cell-node01 gcr.io/was-config-tool/wasnd-cell-node01:8.5.5.17
+docker tag wasnd85-cell-node02 gcr.io/was-config-tool/wasnd-cell-node02:8.5.5.17
 
 docker tag wasnd85-cell-dmgr s008aa39r:18444/wasnd85-cell-dmgr:latest
 docker tag wasnd85-cell-node01 s008aa39r:18444/wasnd85-cell-node01:latest

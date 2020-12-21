@@ -1,6 +1,6 @@
 SHELL := /usr/bin/bash
 
-WAS_INSTALLATION_VERSION = 9.0.5.0
+# WAS_INSTALLATION_VERSION = 9.0.5.5
 
 COMPOSE_FILE = docker-compose-run-was9.yml
 

@@ -66,12 +66,12 @@ if [ $? -ne 0 ] ; then
     else
         echo "#1.2 starting fileserver container: $FILESERVER_NAME"
         # docker run -d  --name caddy -p 8080:8080 -v /INSTALL:/data caddy
-        docker run --name $FILESERVER_CONTAINER_NAME --rm -v $FILESERVER_DIR:/usr/share/nginx/html:ro -d -p$FILESERVER_HTTP_PORT:80 nginx:stable-alpine \
+        docker run --name $FILESERVER_CONTAINER_NAME --rm -e NGINX_ENTRYPOINT_QUIET_LOGS=1 -v $FILESERVER_DIR:/usr/share/nginx/html:ro -d -p$FILESERVER_HTTP_PORT:80 nginx:1.18-alpine \
               /bin/sh -c "sed -i 's/location \/ {/location \/ {\nautoindex on;/' /etc/nginx/conf.d/default.conf  && echo 'starting nginx ....' && exec nginx -g 'daemon off;'"
         sleep 4
     fi
-
-    curl -sSo /dev/null  $WEB_URL
+    echo "checking fileserver webURL: $WEB_URL ..."
+    curl -sS  $WEB_URL > /dev/null
     if [ $? -eq 0 ] ; then
       echo "#1.3 $FILESERVER_NAME tested ok"
     else

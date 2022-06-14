@@ -72,7 +72,8 @@ if [ $? -ne 0 ] ; then
         sleep 4
     fi
 
-    curl -sSo /dev/null  $WEB_URL
+    echo "checking fileserver webURL: $WEB_URL ..."
+    curl -sS  $WEB_URL > /dev/null
     if [ $? -eq 0 ] ; then
       echo "#1.3 $FILESERVER_NAME tested ok"
     else

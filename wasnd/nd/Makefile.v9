@@ -10,7 +10,7 @@ env:
 all: env
 	docker-compose  -f $(COMPOSE_FILE)  up -d dmgr node01 node02
 all-ldap: env
-	docker-compose  -f $(COMPOSE_FILE)  up -d dmgr node01 node02 ldap ldap2
+	docker-compose  -f $(COMPOSE_FILE)  up -d dmgr node01 node02 ldap 
 start-dmgr: env
 	docker-compose  -f $(COMPOSE_FILE)  up -d dmgr
 stop-all: env

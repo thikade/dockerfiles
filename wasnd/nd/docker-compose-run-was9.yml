@@ -13,8 +13,8 @@ services:
 
     # image: thikade/openldap:1.1.7-imported
     image: osixia/openldap:1.2.1
-    container_name: ldap1
-    hostname: ldap1
+    container_name: ldap
+    hostname: ldap
     environment:
       LDAP_ORGANISATION: 2i
       LDAP_DOMAIN: 2i.at
@@ -30,27 +30,13 @@ services:
     # entrypoint: "sh -c 'while true; do sleep 60; echo hello; done'"
     command: --copy-service --loglevel=debug
     networks:
-      - was9
+      was9:
+        aliases:
+          - ldap1
+          - ldap2
+          - ldap3
+          - ldap-new
 
-  ldap2:
-    image: osixia/openldap:1.2.1
-    container_name: ldap2
-    hostname: ldap2
-    environment:
-      LDAP_ORGANISATION: 2i
-      LDAP_DOMAIN: 2i.at
-      LDAP_ADMIN_PASSWORD: admin
-    expose:
-      - "389"
-      - "636"
-    ports:
-      - "20389:389"
-      - "20636:636"
-    volumes:
-      - ${PWD}/bootstrap-ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
-    command: --copy-service --loglevel=info
-    networks:
-      - was9
 
   dmgr:
     image: wasnd-cell-dmgr:${WAS_INSTALLATION_VERSION}

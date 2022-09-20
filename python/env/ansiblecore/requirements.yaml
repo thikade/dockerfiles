@@ -1,0 +1,14 @@
+collections:
+  - name: ansible.posix
+  - name: ansible.utils
+  - name: awx.awx
+  - name: community.aws
+  - name: community.azure
+  - name: community.crypto
+  - name: community.general
+  - name: community.okd
+  - name: community.libvirt
+  - name: google.cloud
+  - name: kubernetes.core
+#    version: 2.2.2
+  - name: redhat_cop.tower_configuration

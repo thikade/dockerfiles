@@ -1,0 +1,6 @@
+# shell completion of the Ansible command line utilities
+argcomplete 
+# one time email
+ote
+openshift 
+kubernetes

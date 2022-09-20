@@ -1,0 +1,17 @@
+ansible-core==2.13.4
+# shell completion of the Ansible command line utilities
+argcomplete 
+awxkit>=19.4.0
+cryptography >= 3.0
+ipaddress
+jmespath
+jsonpatch
+kubernetes>= 12.0.0
+linode_api4 >= 2.0.0
+openshift 
+prettytable
+pypsrp
+PyYAML >= 3.11
+requests >= 1.1
+urllib3
+websocket-client >= 1.0.0

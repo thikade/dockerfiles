@@ -18,4 +18,4 @@ RUN DISABLE_DOCS=1 make bin/skopeo
 
 
 
-CMD [ "bin/skopeo", "-v" ]
+CMD [ "bin/skopeo" ]

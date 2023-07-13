@@ -1,0 +1,24 @@
+FROM centos:8 as builder
+
+ARG SKOPEO_VER=1.4
+ENV SKOPEO_VER=${SKOPEO_VER}
+
+
+RUN sed -i -e "s|mirrorlist=|#mirrorlist=|g" -e "s|#baseurl=http://mirror.centos.org|baseurl=https://vault.centos.org|g" /etc/yum.repos.d/CentOS-Linux-*
+RUN yum update -y && yum upgrade -y && yum groupinstall 'Development Tools' -y 
+
+RUN yum install -y gpgme-devel libassuan-devel btrfs-progs-devel device-mapper-devel git
+RUN curl -fLS https://golang.org/dl/go1.20.6.linux-amd64.tar.gz  -o /tmp/go.tgz && mkdir -p /go/ && tar -xvf /tmp/go.tgz --strip-components=1 -C /go/ && rm -f  /tmp/go.tgz
+
+ENV PATH=$PATH:/go/bin/
+ENV GOPATH=/go
+
+# RUN go env
+RUN git clone -b release-${SKOPEO_VER} https://github.com/containers/skopeo $GOPATH/src/github.com/containers/skopeo
+
+WORKDIR $GOPATH/src/github.com/containers/skopeo
+ENV a=1
+RUN DISABLE_DOCS=1 make bin/skopeo
+
+
+CMD [ "bin/skopeo", "-v" ]

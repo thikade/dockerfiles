@@ -1,0 +1,142 @@
+---
+- name: Grafana Configuration
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  collections:
+    - community.grafana
+
+  vars:
+    # https://grafana.com/docs/grafana/latest/developers/http_api/folder_permissions/
+    ROLE_ADMIN: "Admin"
+    ROLE_EDITOR: "Editor"
+    ROLE_VIEWER: "Viewer"
+    ROLE_TO_ID_MAPPING:
+      Admin:  4
+      Editor: 2
+      Viewer: 1
+
+    grafana:
+      url:      "{{ lookup('env', 'GRAFANA_URL')  | default('http://localhost:3000') }}"
+      admin:    "{{ lookup('env', 'GRAFANA_USER') | default('admin')  }}"
+      password: "{{ lookup('env', 'GRAFANA_PASS') | default('admin')  }}"
+
+    default_user_role: "{{ ROLE_VIEWER }}"
+    default_folder_role: "{{ ROLE_EDITOR }}"
+    default_password: "test"
+
+  vars_files:
+  - users_and_roles.yaml
+
+
+  module_defaults:
+    group/community.grafana.grafana:
+      grafana_url: "{{ grafana.url }}"
+      grafana_user: "{{ grafana.admin }}"
+      grafana_password: "{{ grafana.password }}"
+
+
+  tasks:
+  - name: Add defaults to users list
+    set_fact:
+      users2: "{{
+        users2 | default([])
+        + [{
+          'login': item.login,
+          'name': item.name | default(item.login),
+          'password2': item.password | default(default_password),
+          'password': 765475 | random() | string | hash('sha1'),
+          'email': item.email | default(item.login),
+          'is_admin': 'true' if (item.is_admin|default(false)|bool) else 'false',
+          'state': item.state | default('present'),
+          'role': item.role | default(default_user_role)
+          }]
+      }}"
+
+    loop: "{{ users }}"
+    loop_control:
+      label: "{{ item.login }}"
+
+  - name: Update users list
+    set_fact:
+      users: "{{ users2 }}"
+
+  - name: Debug/Print enriched users list
+    debug:
+      var: users
+      verbosity: 1
+
+
+  - name: Create/Update/Remove folder
+    grafana_folder:
+      title: "{{ item.name }}"
+      state: "{{ item.state | default('present') }}"
+    loop: "{{ folders_and_teams }}"
+    loop_control:
+      label: "{{ item.name }} state: {{ item.state | default('present') }}"
+
+
+  - name: Create/Update/Remove Grafana user
+    grafana_user:
+      login: "{{ item.login }}"
+      name: "{{ item.name }}"
+      password: "{{ item.password }}"
+      email: "{{ item.email }}"
+      is_admin: "{{ item.is_admin }}"
+      state: "{{ item.state }}"
+    loop: "{{ users }}"
+    loop_control:
+      label: "{{ item.login }} admin:{{ item.is_admin }}  state:{{ item.state }}"
+    register: update_user_result
+    tags: [ user-roles ]
+
+  - name: Print results of user updates
+    debug:
+      verbosity: 1
+      msg: |
+        ++++ #{{ ansible_loop.index }} : {{ item.item.login }} ++++++
+        {{ item.user | to_nice_yaml | indent(3, true) }}
+    loop: "{{ update_user_result.results }}"
+    loop_control:
+      extended: yes
+      label: "{{ ansible_loop.index }}"
+
+
+  - name: Create/Update a team
+    grafana_team:
+      name: "{{ item.name }}"
+      email: "{{ item.email | default(item.name) }}"
+      state: "{{ item.state | default('present') }}"
+      members: "{{ item.members | default([]) }}"
+      enforce_members: true
+    loop: "{{ folders_and_teams }}"
+    loop_control:
+      label: "{{ item.name }} state: {{ item.state | default('present') }}"
+
+
+  - name: Update ORG user roles
+    include_tasks: inc_set_user_org_roles.yaml
+    args:
+      apply:
+        tags: user-roles
+    when: user.state  == 'present'
+    loop: "{{ users }}"
+    loop_control:
+      loop_var: user
+      label: "set role for: {{ user.login }} to: {{ user.role }}"
+    tags: [ user-roles ]
+
+
+  - name: Update folder permissions
+    include_tasks: inc_folder_permissions.yaml
+    args:
+      apply:
+        tags: folder-permissions
+    when: (folder.state | default('present')) == 'present'
+    loop: "{{ folders_and_teams }}"
+    loop_control:
+      loop_var: folder
+      label: "setting permissions on folder: {{ folder.name }}"
+    tags: [ folder-permissions ]

@@ -1,0 +1,47 @@
+
+version: '3'
+
+networks:
+  grafana-network:
+    driver: bridge
+
+services:
+  grafana:
+    image: docker.io/grafana/grafana:8.5.27
+    container_name: grafana
+    hostname: grafana
+    environment:
+      FOO: BAR
+      GF_USERS_VIEWERS_CAN_EDIT: true
+    volumes:
+      - grafana-storage:/var/lib/grafana:rw
+    expose:
+      - "3000"
+    ports:
+      - "8080:3000"
+    networks:
+      - grafana-network
+
+  grafana-config:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # args:
+      #  URL: http://192.168.99.100:8080/
+    image: grafana-config:latest
+    container_name: grafana-config
+    hostname: grafana-config
+    # command: "sleep 999999"
+    command: "bash -c ./playbook/run.sh"
+    environment:
+      GRAFANA_URL: "http://grafana:3000"
+      GRAFANA_USER: "admin"
+      GRAFANA_PASS: "admin"
+      ANSIBLE_CONFIG: /home/ansible/env/ansible/playbook/ansible.cfg
+    volumes:
+      - ./playbook:/home/ansible/env/ansible/playbook:ro
+    networks:
+      - grafana-network
+
+volumes:
+  grafana-storage:

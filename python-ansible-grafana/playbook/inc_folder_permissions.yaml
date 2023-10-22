@@ -1,0 +1,64 @@
+
+  # Update folder permissions
+  #   outer loop var: "{{ folder }}"
+  #
+  - ansible.builtin.command:
+      cmd: "cowsay -t 'folder permissions for: {{ folder.name }}'"
+    register: cowsay
+
+  - ansible.builtin.debug:
+      msg: "{{ cowsay.stdout }}"
+
+  - name: get folder id for ({{ folder.name }})
+    grafana_folder:
+      title: "{{ folder.name }}"
+    register: folderlookup
+
+  - name: get team id for ({{ folder.name }})
+    grafana_team:
+      name: "{{ folder.name }}"
+      email: "{{ folder.email | default(folder.name) }}"
+    register: teamlookup
+
+
+  - name: set facts for ({{ folder.name }})
+    set_fact:
+      folder_role: "{{ folder.team_role | default(default_folder_role) }}"
+      folder_uid: "{{ folderlookup.folder.uid | default('UNDEFINED') }}"
+      team_id: "{{ teamlookup.team.id  | default('UNDEFINED') }}"
+    check_mode: yes
+
+  - name: Check UID lookup was successful
+    fail:
+      msg: |
+        ERROR: team/folder UID lookup failed for: {{ folder.name }}
+        folder-uid: {{ folder_uid }}
+        team-uid:   {{ team_id }}
+    when: folder_uid == 'UNDEFINED' or team_id == 'UNDEFINED'
+
+  - name: Print new permissions for ({{ folder.name }})
+    ansible.builtin.debug:
+      msg: |
+        folder: {{folder.name}} ({{ folder_uid }})
+        => team:{{ folder.name }} ({{ team_id }})
+        => role:{{ folder_role }} ({{ ROLE_TO_ID_MAPPING[folder_role] | int }})
+
+
+
+  - name: Update permissions on folder ({{ folder.name }})
+    uri:
+      url: "{{ grafana.url }}/api/folders/{{ folder_uid }}/permissions"
+      force_basic_auth: true
+      url_username: "{{ grafana.admin }}"
+      url_password: "{{ grafana.password }}"
+      method: POST
+      body: | # 1 - viewer | 2 - editor # teamId requires int here, otherwise returns 400
+        {"items": [{"role": "Editor", "permission": 2}, {"role": "Viewer", "permission": 1}, {"teamId": {{ team_id }}, "permission": {{ ROLE_TO_ID_MAPPING[folder_role] | int }} }]}
+      body_format: json
+      return_content: yes
+    register: folder_perms
+
+  - name: Show result of folder permissions update
+    ansible.builtin.debug:
+      msg: "{{ folder_perms.json | to_nice_json }}"
+      verbosity: 1

@@ -1,0 +1,66 @@
+
+# set ORG roles of *existing* user to either Admin, Editor, or Viewer.
+# Will fail if user does not exist!
+# This prem change cannot be done using User API, but only using the ORG API
+#
+#   outer loop var: "{{ user }}"
+#
+- ansible.builtin.command:
+    cmd: "cowsay -t 'Set role for user: {{ user.login }}'"
+  register: cowsay
+
+- ansible.builtin.debug:
+    msg: "{{ cowsay.stdout }}"
+
+- name: Get user id for ({{ user.login }})
+  uri:
+    method: GET
+    url: "{{ grafana.url }}/api/users/lookup?loginOrEmail={{ user.login }}"
+    url_username: "{{ grafana.admin }}"
+    url_password: "{{ grafana.password }}"
+    force_basic_auth: true
+    return_content: yes
+  register: userlookup
+
+
+- name: Show result of user lookup
+  debug:
+    var: userlookup
+    verbosity: 1
+
+- name: Exit if user lookup failed
+  fail:
+    msg: "ERROR: user UID lookup failed for user: {{ user.login }}"
+  when: userlookup.json is not defined or userlookup.json.id is not defined
+
+
+- name: Set facts for ({{ user.login }})
+  set_fact:
+    user_role: "{{ user.role | default(default_user_role) }}"
+    user_uid: "{{ userlookup.json.id }}"
+  check_mode: yes
+
+
+- name: Print new permissions for ({{ user.login }})
+  ansible.builtin.debug:
+    msg: |
+      user: {{user.login}} (uid:{{ user_uid }}) => role: {{ user_role }}
+
+
+- name: Update ORG role on user ({{ user.login }})
+  uri:
+    method: PATCH
+    url: "{{ grafana.url }}/api/org/users/{{ user_uid }}"
+    url_username: "{{ grafana.admin }}"
+    url_password: "{{ grafana.password }}"
+    force_basic_auth: true
+    body: |
+      {"role": "{{ user_role }}" }
+    body_format: json
+    return_content: yes
+  register: org_role
+
+- name: Show result of user role update
+  ansible.builtin.debug:
+    msg: "{{ org_role.json | to_nice_json }}"
+    verbosity: 1

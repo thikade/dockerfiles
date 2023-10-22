@@ -1,0 +1,62 @@
+    users:
+      # - login: testuser
+      #   name: Test User
+      #   email: test@user.com
+      #   is_admin: false
+      #   state: present
+      #   role: Viewer        # Viewer, Editor, Admin; default is (default_user_role) !
+
+
+      - login: thikade
+        is_admin: true
+
+      - login: thikade2
+        is_admin: false
+
+      # - login: batman
+      #   name: Batman
+      #   is_admin: false
+
+      # - login: robin
+      #   name: Robin
+
+      # - login: mynameisnobody
+      #   state: absent
+
+      # - login: foo01
+      # - login: bar01
+
+
+
+    # opinionated folder/team setup
+    # folder == team: for each folder we create one team with the SAME name,
+    # then add members to the team,
+    # and add <team_role> or default_folder_role ('Editor') permissions to the folder for that team!
+
+    folders_and_teams:
+      # - name: example-team
+      #   team_role: "{{ ROLE_VIEWER }}"
+      #   members:
+      #   - user1
+      #   - user2
+
+      - name: devops
+        members:
+        - thikade
+        - thikade2
+
+      - name: team-01
+        members: []
+        # - batman
+        # - robin
+        # - foo01
+        # - bar01
+
+      # - name: team-02
+      #   state: present
+      #   members:
+      #   - foo02
+      #   - bar02
+
+      # - name: team-nobody
+      #   state: absent

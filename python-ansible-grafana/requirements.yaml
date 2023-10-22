@@ -1,0 +1,18 @@
+# requirements.yml
+collections:
+  - name: ansible.posix
+  - name: ansible.utils
+  - name: community.crypto
+  - name: community.general
+  - name: community.okd
+  - name: kubernetes.core
+    # version: 2.2.2
+
+  # https://docs.ansible.com/ansible/latest/collections/community/grafana/
+  - name: community.grafana
+
+
+  # - name: community.aws
+  # - name: community.azure
+  # - name: google.cloud
+  # - name: community.libvirt

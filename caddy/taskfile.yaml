@@ -1,0 +1,13 @@
+# use "arkade get task" to install task utility for taskfiles! (modern alternative to "make")
+version: '3'
+
+tasks:
+  fileserver:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - docker run -d --name caddyfs -p 8080:2015 -v $PWD:/srv  abiosoft/caddy
+
+  fileserver2:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - docker run -d --user 1000 --name caddyfs -p 8080:2015 -v $PWD:/srv  abiosoft/caddy

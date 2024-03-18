@@ -5,9 +5,9 @@ tasks:
   fileserver:
     dir: '{{.USER_WORKING_DIR}}'
     cmds:
-      - docker run -d --name caddyfs -p 8080:2015 -v $PWD:/srv  abiosoft/caddy
+      - docker run -d --name caddyfs -p 8080:80 -v $PWD:/usr/share/caddy  caddy:latest
 
   fileserver2:
     dir: '{{.USER_WORKING_DIR}}'
     cmds:
-      - docker run -d --user 1000 --name caddyfs -p 8080:2015 -v $PWD:/srv  abiosoft/caddy
+      - docker run -d --user 1000 --name caddyfs -p 8080:80 -v $PWD:/usr/share/caddy  caddy:latest

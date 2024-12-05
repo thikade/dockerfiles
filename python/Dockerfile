@@ -8,7 +8,7 @@ RUN useradd -u 10789 -m user1 \
     && mkdir -p /home/user1/.ansible/collections \
     && chown -R user1:user1 /home/user1/
 
-USER user1
+USER 10789
 
 WORKDIR /home/user1
 
@@ -18,9 +18,9 @@ RUN python3 -m venv /home/user1/env/default
 COPY --chown=user1:user1 env/default/requirements.txt     /home/user1/env/default/requirements.txt
 RUN /home/user1/env/default/bin/pip3 -v install -r /home/user1/env/default/requirements.txt
 
-RUN python3 -m venv /home/user1/env/ansible29
-COPY --chown=user1:user1 env/ansible29/requirements.txt   /home/user1/env/ansible29/requirements.txt
-RUN /home/user1/env/ansible29/bin/pip3 -v install -r /home/user1/env/ansible29/requirements.txt
+RUN python3 -m venv /home/user1/env/ansible
+COPY --chown=user1:user1 env/ansible/requirements.txt   /home/user1/env/ansible/requirements.txt
+RUN /home/user1/env/ansible/bin/pip3 -v install -r /home/user1/env/ansible/requirements.txt
 
 RUN python3 -m venv /home/user1/env/ansiblecore
 COPY --chown=user1:user1 env/ansiblecore/ /home/user1/env/ansiblecore/

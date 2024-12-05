@@ -1,7 +1,7 @@
 # shell completion of the Ansible command line utilities
-argcomplete 
+argcomplete
 
-# Ansible 2.9
-openshift 
+# Ansible Community Release
+ansible==11.1.0
+openshift
 kubernetes
-ansible==2.9.27

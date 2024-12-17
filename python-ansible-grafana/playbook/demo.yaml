@@ -1,0 +1,31 @@
+---
+- name: Grafana Configuration
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  collections:
+    - community.grafana
+
+  vars:
+    groupList:
+      - /abc
+      - /def
+      - /ghi
+
+
+
+  tasks:
+  - name: groupList
+    set_fact:
+      groupList2: "{{ groupList | map('regex_replace', '^(.*)$', 'group: \\1') | list }}"
+
+  - name: Debug/Print
+    debug:
+      msg: |
+        V1:
+        {{ groupList | map('regex_replace', '^(.*)$', 'group: \1') | list }}
+        V2:
+        {{ groupList2 | to_yaml }}
+      verbosity: 0

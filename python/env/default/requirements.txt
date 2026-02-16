@@ -5,3 +5,4 @@ ote
 openshift
 kubernetes
 requests
+prometheus-client

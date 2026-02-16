@@ -34,6 +34,6 @@ RUN chmod -R a+rw /home/user && \
     find /home/user -type d -exec chmod a+rwx {} \;      # required for Openshift random user ID
 
 # # activate default env; same as "source env/default/bin/activate"
-ENV PATH=/home/user/env/default/bin:$PATH
+ENV PATH=/home/user/env/ansiblecore/bin:$PATH
 
 CMD [ "sleep", "infinity" ]

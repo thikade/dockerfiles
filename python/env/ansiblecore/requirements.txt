@@ -1,4 +1,4 @@
-ansible-core==2.18.1
+ansible-core>=2.20.2
 # shell completion of the Ansible command line utilities
 argcomplete
 awxkit>=19.4.0

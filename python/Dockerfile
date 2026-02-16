@@ -14,18 +14,19 @@ WORKDIR /home/user
 
 
 # create venvs
-RUN python3 -m venv /home/user/env/default
-COPY --chown=user:user env/default/requirements.txt     /home/user/env/default/requirements.txt
-RUN /home/user/env/default/bin/pip3 -v install -r /home/user/env/default/requirements.txt
+# RUN python3 -m venv /home/user/env/default
+# COPY --chown=user:user env/default/requirements.txt     /home/user/env/default/requirements.txt
+# COPY --chown=user:user env/default/requirements.txt     /home/user/env/default/requirements.txt
+# RUN /home/user/env/default/bin/pip3 -v install -r /home/user/env/default/requirements.txt
 
 # RUN python3 -m venv /home/user/env/ansible
 # COPY --chown=user:user env/ansible/requirements.txt   /home/user/env/ansible/requirements.txt
 # RUN /home/user/env/ansible/bin/pip3 -v install -r /home/user/env/ansible/requirements.txt
 
-# RUN python3 -m venv /home/user/env/ansiblecore
-# COPY --chown=user:user env/ansiblecore/ /home/user/env/ansiblecore/
-# RUN /home/user/env/ansiblecore/bin/pip3 -v install -r /home/user/env/ansiblecore/requirements.txt
-# RUN /home/user/env/ansiblecore/bin/ansible-galaxy -vvv collection install -r /home/user/env/ansiblecore/requirements.yaml
+RUN python3 -m venv /home/user/env/ansiblecore
+COPY --chown=user:user env/ansiblecore/ /home/user/env/ansiblecore/
+RUN /home/user/env/ansiblecore/bin/pip3 -v install -r /home/user/env/ansiblecore/requirements.txt
+RUN /home/user/env/ansiblecore/bin/ansible-galaxy -vvv collection install -r /home/user/env/ansiblecore/requirements.yaml
 
 COPY --chown=user:user ansible.cfg .
 
